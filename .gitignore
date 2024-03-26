@@ -1,0 +1,8 @@
+# Ignore everything
+*
+# except for: 
+!.gitignore
+!*.sh
+!*.py
+!scripts/
+!scripts/executable_scripts/
