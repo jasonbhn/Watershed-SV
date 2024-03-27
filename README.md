@@ -17,13 +17,12 @@ Otherwise, select smallset.
 5. `-r | --rareness`: rareness, if --filter-rare == True, then this is the MAF threshold to set to filter for rare variants, 0.01 recommended or lower.  
 6. `-l | --liftover-bed`: if you have a crossmap/liftover SV coordinate you want to use, ie, if VCF is in older build, you lifted over coordinates to HG38, then provide the bed file in addition to original VCF to convert coordinates. 
 7. `-o | --outdir`: output directory name for annotations
-8. `-b | --genome-bound-file`: a file depicting the chromosome/contig name, start and end coordinates. 
-9. `-t | --transcript-origin`: which version of gencode transcript is used. 
-10. `-g | --gencode-genes`: gencode transcript model file. 
-12. `-c | --vep-cache-dir`: vep_cache_dir for running vep annotations. we recommend setting up vep offline to run our pipeline smoothly. 
-13. `-a | --metadata`: metadata file for filtering ethnicity. In our case, training data is GTEx, we used GTEx metadata file from dbGaP. 
-14. `-e | --filter-ethnicity`: filter by ethnicity? GTEx relic, True to only train on EUR individuals. 
-15. `-i | --filter-rare`: filter rare variants if using `population` model 
+8. `-b | --genome-bound-file`: a file depicting the chromosome/contig name, start and end coordinates.
+9. `-g | --gencode-genes`: gencode transcript model file.
+10. `-c | --vep-cache-dir`: vep_cache_dir for running vep annotations. we recommend setting up vep offline to run our pipeline smoothly.
+11. `-a | --metadata`: metadata file for filtering ethnicity. In our case, training data is GTEx, we used GTEx metadata file from dbGaP.
+12. `-e | --filter-ethnicity`: filter by ethnicity? GTEx relic, True to only train on EUR individuals.
+13. `-i | --filter-rare`: filter rare variants if using `population` model 
 
 ## Evaluating Watershed-SV model against WGS-only model
 
