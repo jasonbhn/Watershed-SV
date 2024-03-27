@@ -6,8 +6,8 @@ Watershed-SV extends [Watershed](https://github.com/BennyStrobes/Watershed) to m
 
 ## Instructions for collecting annotations. 
 Watershed-SV pipeline currently uses bash script for simplicity. The key scripts are `scripts/executable_scripts/generate_annotations.sh` and `scripts/executable_scripts/generate_annotations_ABC.sh` depending on whether you want to run region-agnostic model (10kb model in the paper) or region-aware model (100kb model in the paper). 
+To replicate the environment for collecting annotations, see: `WatershedSV.yml`. 
 ### Parameter breakdown: 
-`scripts/executable_scripts/generate_annotations.sh` parameters: 
 1. `-p | --pipeline`: which pipeline to use, select from `population`, `smallset`.
 If data is of sufficient size, ie > 100, select population, allowing for option --filter-ethnicity, --filter rare. 
 Otherwise, select smallset. 
