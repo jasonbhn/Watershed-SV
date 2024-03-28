@@ -1,4 +1,4 @@
-# Watershed-SV
+# Watershed-SV [Construction in progress]
 Watershed-SV extends [Watershed](https://github.com/BennyStrobes/Watershed) to model the impact of rare SVs (DUP, DEL, DUP-CNV, DEL-CNV, INV, INS) on nearby gene expressions outlier. For running Watershed model, please refer to Watershed GitHub. This repository contains:
 1. the pipeline and associated scripts used for generating structural variations (rare and common) annotations with respect to nearby genes.
 2. the scripts for generating expression outliers. 
