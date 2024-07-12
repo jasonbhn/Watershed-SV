@@ -6,3 +6,5 @@
 !*.py
 !scripts/
 !scripts/executable_scripts/
+!*.yml
+!Dockerfile
