@@ -31,15 +31,16 @@ module load bedtools
 which python
 bash scripts/executable_scripts/generate_annotations.sh \
 --pipeline smallset \
---input-vcf ../SR_LR_comparison/UDN.mantaSV.SR.filterPASS.noBNDTRA.reIDed.LRIntersect.vcf.gz \
+--input-vcf ../SR_SV_calls/UDN.duphold_filtered.jasmine_merged.hg38.noBND.sorted.svafotate.ofp50.UDNID.qualPASS.LEN50.LR_SR_intersect.annotated.vcf.gz \
 --filters "PASS" \
 --flank 10000 \
 --medz-cutoff 3 \
 --rareness 0.01 \
---outdir UDN-protein-lincRNA-10k-shortread/ \
+--outdir UDN-protein-lincRNA-10k-shortread-3.0/ \
 --genome-bound-file input/gtex_human_reference.genome \
 --transcript-origin input/gencode.v35.primary_assembly.annotation.gtf \
 --gencode-genes input/gencode.v35.primary_assembly.annotation.gtf \
 --genome-build hg38 \
 --vep-cache-dir vep_cache \
---filter-ethnicity False
+--filter-ethnicity False \
+--impute-zero-allele false
