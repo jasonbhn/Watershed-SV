@@ -1,8 +1,11 @@
 # Ignore everything
 *
+rare_variants_env.yml
 # except for: 
 !.gitignore
 !*.sh
 !*.py
 !scripts/
 !scripts/executable_scripts/
+!*.yml
+!Dockerfile
