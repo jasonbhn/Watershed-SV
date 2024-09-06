@@ -1,5 +1,6 @@
 input{
     Int flank
+    
     File pipeline_bed
     File genes_bed
 }
