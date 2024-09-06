@@ -7,10 +7,10 @@ task gene_annotations_processing {
     }
 
     output {
-        File "genes.bed"
-        File "exons.bed"
-        File "gene_tss.tsv"
-        File "gene_tes.tsv"
+        File genes = "genes.bed"
+        File exons = "exons.bed"
+        File gene_tss = "gene_tss.tsv"
+        File gene_tes = "gene_tes.tsv"
     }
 
     runtime {

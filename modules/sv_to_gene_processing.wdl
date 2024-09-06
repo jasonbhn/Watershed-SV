@@ -6,7 +6,7 @@ input{
 }
 
 output{
-    File gene_sv.${flank}.bed
+    File gene_sv_bed = "gene_sv.${flank}.bed"
 }
 
 runtime{

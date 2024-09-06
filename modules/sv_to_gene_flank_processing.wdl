@@ -12,7 +12,7 @@ task sv_to_gene_tss_flank_processing {
     }
 
     output {
-        File "${outfile}" 
+        File gene_sv_flank_bed = "${outfile}" 
     }
 
     runtime {

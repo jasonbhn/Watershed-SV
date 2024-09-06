@@ -6,7 +6,7 @@ input{
 }
 
 output{
-    File exon_sv.${flank}.tsv
+    File exon_sv_tsv = "exon_sv.${flank}.tsv"
 }
 
 runtime{

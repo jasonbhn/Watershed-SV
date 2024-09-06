@@ -9,7 +9,7 @@ task sv_to_gene_remap {
     }
 
     output {
-        File "remap_crm_sv.dist.${flank}.tsv"
+        File remap_crm_sv_tsv = "remap_crm_sv.dist.${flank}.tsv"
     }
 
     runtime {

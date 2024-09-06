@@ -12,10 +12,10 @@ task extract_rare_variants{
     }
 
     output{
-        File "pipeline_input.bed"
-        File "vep_input.tsv"
-        File "pipeline_maf.tsv"
-        File "pipeline_input_genotypes.tsv"
+        File pipeline_input = "pipeline_input.bed"
+        File vep_input = "vep_input.tsv"
+        File pipeline_maf = "pipeline_maf.tsv"
+        File pipeline_input_genotypes = "pipeline_input_genotypes.tsv"
     }
 
     runtime{
