@@ -7,7 +7,7 @@ input{
 }
 
 output{
-    File ${output_prefix}.${flank}.tsv
+    File cadd = "${output_prefix}.${flank}.tsv"
 }
 
 runtime{
