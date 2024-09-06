@@ -10,3 +10,4 @@ rare_variants_env.yml
 !*.yml
 !Dockerfile
 !*.wdl
+!modules
