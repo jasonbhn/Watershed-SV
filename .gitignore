@@ -9,3 +9,4 @@ rare_variants_env.yml
 !scripts/executable_scripts/
 !*.yml
 !Dockerfile
+!*.wdl
