@@ -22,10 +22,22 @@ import "modules/vep.wdl" as vep
 
 workflow Watershed_SV {
     input {
-
+        #extract_rare_variants inputs
+        File input_vcf
+        File metadata
+        String pipeline
+        Boolean filter_ethnicity
+        Boolean filter_rare
     }
 
-    ###CALL TASKS
+    call extract_rare_variants {
+        input:
+            input_vcf=input_vcf,
+            metadata=metadata,
+            pipeline=pipeline,
+            filter_ethnicity,
+            filter_rare
+    }
 
     output {
 
