@@ -1,21 +1,23 @@
 version 1.0
 
-input{
-    String roadmap_dir
-    Int flank
-}
+task process_roadmaps{
+    input{
+        String roadmap_dir
+        Int flank
+    }
 
-output{
-    File generic_roadmap = "roadmap_multitissue_sv_to_gene.generic.${i}.tsv"
-    File tss_roadmap = "roadmap_multitissue_sv_to_gene.tss.${i}.tsv"
-    File tes_roadmap = "roadmap_multitissue_sv_to_gene.tes.${i}.tsv"
-}
+    output{
+        File generic_roadmap = "roadmap_multitissue_sv_to_gene.generic.${i}.tsv"
+        File tss_roadmap = "roadmap_multitissue_sv_to_gene.tss.${i}.tsv"
+        File tes_roadmap = "roadmap_multitissue_sv_to_gene.tes.${i}.tsv"
+    }
 
-runtime{
-    docker: "${docker}"
-    memory: "${memory}GB"
-    disks: "local-disk ${disk_space} HDD"
-    cpu: "${ncpu}"
+    runtime{
+        docker: "${docker}"
+        memory: "${memory}GB"
+        disks: "local-disk ${disk_space} HDD"
+        cpu: "${ncpu}"
+    }
 }
 
 command <<<

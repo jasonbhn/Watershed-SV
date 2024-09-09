@@ -1,20 +1,22 @@
 version 1.0
 
-input{
-    File cadd_file
-    File gene_sv_bed
-    String output_prefix
-}
+task CADD{
+    input{
+        File cadd_file
+        File gene_sv_bed
+        String output_prefix
+    }
 
-output{
-    File cadd = "${output_prefix}.${flank}.tsv"
-}
+    output{
+        File cadd = "${output_prefix}.${flank}.tsv"
+    }
 
-runtime{
-    docker: "${docker}"
-    memory: "${memory}GB"
-    disks: "local-disk ${disk_space} HDD"
-    cpu: "${ncpu}"
+    runtime{
+        docker: "${docker}"
+        memory: "${memory}GB"
+        disks: "local-disk ${disk_space} HDD"
+        cpu: "${ncpu}"
+    }
 }
 
 command <<<

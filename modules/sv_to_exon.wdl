@@ -1,19 +1,23 @@
-input{
-    Int flank
+version 1.0
 
-    File exon_bed
-    File gene_sv_bed
-}
+task sv_to_exon{
+    input{
+        Int flank
 
-output{
-    File exon_sv_tsv = "exon_sv.${flank}.tsv"
-}
+        File exon_bed
+        File gene_sv_bed
+    }
 
-runtime{
-    docker: "${docker}"
-    memory: "${memory}GB"
-    disks: "local-disk ${disk_space} HDD"
-    cpu: "${ncpu}"
+    output{
+        File exon_sv_tsv = "exon_sv.${flank}.tsv"
+    }
+
+    runtime{
+        docker: "${docker}"
+        memory: "${memory}GB"
+        disks: "local-disk ${disk_space} HDD"
+        cpu: "${ncpu}"
+    }
 }
 
 command <<<
