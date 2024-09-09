@@ -1,20 +1,25 @@
-input{
-    File gene_sv_bed
-    File phcon20_file
+version 1.0
 
-    String outut_prefix
+task phastcon20{
+    input{
+        File gene_sv_bed
+        File phcon20_file
+
+        String outut_prefix
+    }
+
+    output{
+        File ${output_prefix}.${flank}.tsv
+    }
+
+    runtime{
+        docker: "${docker}"
+        memory: "${memory}GB"
+        disks: "local-disk ${disk_space} HDD"
+        cpu: "${ncpu}"
+    }
 }
 
-output{
-    File ${output_prefix}.${flank}.tsv
-}
-
-runtime{
-    docker: "${docker}"
-    memory: "${memory}GB"
-    disks: "local-disk ${disk_space} HDD"
-    cpu: "${ncpu}"
-}
 
 command <<<
     python3.10 scripts/executable_scripts/sv_to_gene_bw_scores.py \

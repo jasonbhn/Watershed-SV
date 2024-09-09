@@ -1,21 +1,25 @@
-input{
-    File TADs_dir
-    File genome_bound_file
-    File TAD_5000_flank_gene_SV
-    File TAD_cleaned
+version 1.0
 
-    String output_prefix
-}
+task sv_to_gene_tad{
+    input{
+        File TADs_dir
+        File genome_bound_file
+        File TAD_5000_flank_gene_SV
+        File TAD_cleaned
 
-output{
-    File sv_to_genes_tad = "${output_prefix}.${flank}.tsv"
-}
+        String output_prefix
+    }
 
-runtime{
-    docker: "${docker}"
-    memory: "${memory}GB"
-    disks: "local-disk ${disk_space} HDD"
-    cpu: "${ncpu}"
+    output{
+        File sv_to_genes_tad = "${output_prefix}.${flank}.tsv"
+    }
+
+    runtime{
+        docker: "${docker}"
+        memory: "${memory}GB"
+        disks: "local-disk ${disk_space} HDD"
+        cpu: "${ncpu}"
+    }
 }
 
 command <<<
