@@ -17,6 +17,8 @@ import "modules/sv_to_gene_processing.wdl" as sv_to_gene_processing
 import "modules/sv_to_gene_remap.wdl" as sv_to_gene_remap
 import "modules/sv_to_gene_tad.wdl" as sv_to_gene_tad
 import "modules/combine_annotations_ABC.wdl" as combine_annotations_ABC
+import "modules/collect_files.wd" as collect_files
+import "modules/vep.wdl" as vep
 
 workflow Watershed_SV {
     input {
