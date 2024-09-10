@@ -6,6 +6,7 @@ task extract_rare_variants{
         File metadata
 
         String pipeline
+        Array[String] filters
 
         Boolean filter_ethnicity
         Boolean filter_rare
@@ -37,7 +38,7 @@ task extract_rare_variants{
                 --infer-rareness \
                 --filter-ethnicity \
                 --metadata $metadata \
-                --genotype-filters $filters \
+                --genotype-filters '~{sep=" " filters}' \
                 --out-annotsv vep_input.tsv \
                 --out-generic pipeline_input.bed \
                 --out-maf pipeline_maf.tsv \
@@ -49,7 +50,7 @@ task extract_rare_variants{
                 --extract-genotype \
                 --filter-ethnicity \
                 --metadata $metadata \
-                --genotype-filters $filters \
+                --genotype-filters '~{sep=" " filters}' \
                 --out-annotsv vep_input.tsv \
                 --out-generic pipeline_input.bed \
                 --out-maf pipeline_maf.tsv \
@@ -62,7 +63,7 @@ task extract_rare_variants{
                 --lifted-coord $liftover_bed \
                 --extract-genotype \
                 --infer-rareness \
-                --genotype-filters $filters \
+                --genotype-filters '~{sep=" " filters}' \
                 --out-annotsv vep_input.tsv \
                 --out-generic pipeline_input.bed \
                 --out-maf pipeline_maf.tsv \
@@ -72,7 +73,7 @@ task extract_rare_variants{
                 --vcf $input_vcf \
                 --lifted-coord $liftover_bed \
                 --extract-genotype \
-                --genotype-filters $filters \
+                --genotype-filters '~{sep=" " filters}' \
                 --out-annotsv vep_input.tsv \
                 --out-generic pipeline_input.bed \
                 --out-maf pipeline_maf.tsv \
