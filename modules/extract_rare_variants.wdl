@@ -29,8 +29,8 @@ task extract_rare_variants{
     command <<<
         if [ "$pipeline" == "population" ]; then
           if [ ! -f "pipeline_input.bed" ]; then
-            if [ "$filter_ethnicity" == "True" ]; then
-              if [ "$filter_rare" == "True" ]; then 
+            if [ "$filter_ethnicity" == "true" ]; then
+              if [ "$filter_rare" == "true" ]; then 
                 python3.10 scripts/executable_scripts/extract_rare_variants.py \
                 --vcf $input_vcf \
                 --lifted-coord $liftover_bed \
@@ -57,7 +57,7 @@ task extract_rare_variants{
                 --out-genotype pipeline_input_genotypes.tsv
               fi
             else
-              if [ "$filter_rare" == "True" ]; then 
+              if [ "$filter_rare" == "true" ]; then 
                 python3.10 scripts/executable_scripts/extract_rare_variants.py \
                 --vcf $input_vcf \
                 --lifted-coord $liftover_bed \
