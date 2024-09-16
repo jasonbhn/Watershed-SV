@@ -21,7 +21,6 @@ task sv_to_gene_slop_processing{
     }
 
     command <<<
-        if [ ! -f "gene_sv_slop.${flank}.bed" ]; then 
         bedtools slop -g ${genome_bound_file} -i ${genes_bed} -b ${flank} | 
         bedtools intersect -a ${pipeline_bed} -b stdin -wb | 
         awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > gene_sv_slop.${flank}.bed
