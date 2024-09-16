@@ -75,6 +75,9 @@ workflow Watershed_SV {
 
         # vep
         String vep_cache_dir
+
+        # collect_files
+        String annotations_dir
     }
 
     call extract_rare_variants {
@@ -207,6 +210,34 @@ workflow Watershed_SV {
                 gene_sv_bed=sv_file
         }
 
+        call process_roadmaps {
+            input:
+                flank=flank,
+                roadmap_dir=roadmap_dir,
+                gene_sv_bed=sv_file
+        }
+
+        ### Pseudocode ###
+        if (sv_file == sv_to_gene_processing.gene_sv_bed):
+            call collect_files {
+                input:
+                    files=[]
+                    outdir=annotations_dir + "/" + intermediates
+            }
+        if (sv_file == sv_to_gene_tes_flank_processing.gene_sv_bed):
+            call collect_files {
+                input:
+                    files=[]
+                    outdir=annotations_dir + "/" + intermediates_tes_flank
+            }
+        if (sv_file == sv_to_gene_tss_flank_processing.gene_sv_bed):
+            call collect_files {
+                input:
+                    files=[]
+                    outdir=annotations_dir + "/" + intermediates_tss_flank
+            }
+        ### End Pseudocode ###
+
     }
 
     call sv_to_gene_dist {
@@ -216,6 +247,20 @@ workflow Watershed_SV {
             gene_sv_slop_bed=sv_to_gene_slop_processing.sv_gene_slop_bed,
             gene_tss=extract_gene_exec.gene_tss,
             gene_tes=extract_gene_exec.tes
+    }
+
+    call vep {
+        input:
+            flank=flank,
+            vep_cache_dir=vep_cache_dir
+    }
+
+    scatter (directory in ["intermediates", "intermediates_tss_flank", "intermediates_tes_flank"]) {
+        call collect_files {
+            input:
+                files=[] #FILL THIS BADDIE OUT
+                outdir=${annotations_dir}/${directory} #Not sure if WDL will read this correctly?
+        }    
     }
 
     output {
