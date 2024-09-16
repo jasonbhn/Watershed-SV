@@ -6,6 +6,7 @@ task sv_to_gene_tad{
         File genome_bound_file
         File TAD_5000_flank_gene_SV
         File TAD_cleaned
+        File gene_sv_bed
     }
 
     output{
@@ -24,7 +25,7 @@ task sv_to_gene_tad{
         
         bash scripts/executable_scripts/clean_TADs.sh ${TADs_dir} ${TAD_cleaned}
         
-        bedtools slop -i gene_sv.${flank}.bed -g ${genome_bound_file} -b 5000 > ${TAD_5000_flank_gene_SV}
+        bedtools slop -i ${gene_sv_bed} -g ${genome_bound_file} -b 5000 > ${TAD_5000_flank_gene_SV}
 
         bedtools intersect -wa -wb -a ${TAD_5000_flank_gene_SV} -b TAD_cleaned/*  -filenames | \
         sort -k4,4 -k6,6 | \
