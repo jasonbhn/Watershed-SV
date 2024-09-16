@@ -4,7 +4,7 @@ import "modules/sv_to_gene_bw_scores.wdl" as CADD
 import "modules/sv_to_gene_bw_scores.wdl" as GC
 import "modules/combine_sv_to_gene_roadmaps.wdl" as combine_sv_to_gene_roadmaps
 import "modules/extract_rare_variants.wdl" as extract_rare_variants
-import "modules/gene_annotations_processing.wdl" as gene_annotations_processing
+import "modules/extract_gene_exec.wdl" as extract_gene_exec
 import "modules/sv_to_gene_bw_scores.wdl" as linsight
 import "modules/merge_enhancers.wdl" as merge_enhancers
 import "modules/sv_to_gene_bw_scores.wdl" as phastcon20
@@ -33,7 +33,7 @@ workflow Watershed_SV {
         Boolean filter_ethnicity
         Boolean filter_rare
 
-        # gene_annotations_processing
+        # extract_gene_exec
         File gencode_genes
         File genome_bound_file
 
