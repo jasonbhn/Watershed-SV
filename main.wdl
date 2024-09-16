@@ -12,7 +12,7 @@ import "modules/process_roadmaps.wdl" as process_roadmaps
 import "modules/sv_to_exon.wdl" as sv_to_exon
 import "modules/sv_to_geneABC.wdl" as sv_to_geneABC
 import "modules/sv_to_gene_dist.wdl" as sv_to_gene_dist
-import "modules/sv_to_gene_dist.wdl" as sv_to_gene_cpg
+import "modules/sv_to_geneCPG.wdl" as sv_to_gene_cpg
 import "modules/sv_to_gene_enhancers.wdl" as sv_to_gene_enhancers
 import "modules/sv_to_gene_tss_flank_processing.wdl" as sv_to_gene_flank_tss_processing
 import "modules/sv_to_gene_tes_flank_processing.wdl" as sv_to_gene_flank_tes_processing
@@ -50,31 +50,15 @@ workflow Watershed_SV {
 
         # sv_to_gene_bw_scores_GC
         File bw_GC
-        String name_GC
-        String stat_method_GC
-        Int upper_limit_GC
-        Int lower_limit_GC
 
         # sv_to_gene_bw_scores_linsight
         File bw_linsight
-        String name_linsight
-        String stat_method_linsight
-        Int upper_limit_linsight
-        Int lower_limit_linsight
 
         # sv_to_gene_bw_scores_CADD
         File bw_CADD
-        String name_CADD
-        String stat_method_CADD
-        Int upper_limit_CADD
-        Int lower_limit_CADD
 
         # sv_to_gene_bw_scores_phastcon
         File bw_phastcon
-        String name_phastcon
-        String stat_method_phastcon
-        Int upper_limit_phastcon
-        Int lower_limit_phastcon
 
         # sv_to_gene_cpg
         File cpg_file
@@ -148,7 +132,92 @@ workflow Watershed_SV {
     }
 
     scatter (sv_file in [sv_to_gene_processing.gene_sv_bed, sv_to_gene_tes_flank_processing.gene_sv_bed, sv_to_gene_tss_flank_processing.gene_sv_bed]) {
-        #fix the modules to be able to accept these values as inputs
+        call sv_to_gene_remap {
+            input:
+                flank=flank,
+                remap_crm=remap_crm,
+                gene_sv_bed=sv_file
+        }
+
+        call sv_to_geneABC {
+            input:
+                gene_sv_bed=sv_file,
+                ABC_enhancers=ABC_enhancers
+        }
+
+        call sv_to_gene_cpg {
+            input:
+                cpg_file=cpg_file,
+                flank=flank,
+                gene_sv_bed=sv_file
+        }
+        
+        call GC {
+            input:
+                bw=bw_GC,
+                gene_sv_bed=sv_file,
+                name="mean_GC_content",
+                stat_method="mean",
+                upper_limit=100,
+                lower_limit=0
+        }
+
+        call CADD {
+            input:
+                bw=bw_CADD,
+                gene_sv_bed=sv_file,
+                name="top10_CADD",
+                stat_method="top10_mean",
+                upper_limit=99,
+                lower_limit=0
+        }
+
+        call linsight {
+            input:
+                bw=bw_linsight,
+                gene_sv_bed=sv_file,
+                name="top10_LINSIGHT",
+                stat_method="top10_mean",
+                upper_limit=1,
+                lower_limit=0
+        }
+
+        call phastcon20 {
+            input:
+                bw=bw_phastcon,
+                gene_sv_bed=sv_file,
+                name="top10_phastCON",
+                stat_method="top10_mean",
+                upper_limit=1,
+                lower_limit=0
+        }
+
+        call sv_to_gene_tad {
+            input:
+                TADs_dir=TADs_dir,
+                genome_bound_file=genome_bound_file,
+                TAD_5000_flank_gene_SV=#Is this necessary?
+                TAD_cleaned=#Is this necessary?
+                gene_sv_bed=sv_file
+        }
+
+        call merge_enhancers {
+            input:
+                flank=flank,
+                enhancers=enhancers,
+                primary_cells=primary_cells,
+                gene_sv_bed=sv_file
+        }
+
+    }
+
+    call sv_to_gene_dist {
+        input:
+            flank=flank,
+            gene_bed=extract_genes_exec.genes,
+            gene_sv_slop_bed=sv_to_gene_slop_processing.sv_gene_slop_bed,
+            gene_tss=extract_gene_exec.gene_tss,
+            gene_tes=extract_gene_exec.tes
     }
 
     output {
