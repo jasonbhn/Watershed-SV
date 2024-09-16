@@ -4,6 +4,8 @@ task sv_to_geneCPG{
     input{
         File cpg_file
         Int flank
+
+        File gene_sv_bed
     }
 
     outputs{
@@ -20,7 +22,7 @@ task sv_to_geneCPG{
     command <<<
         awk '{{FS="\t";OFS="\t";print $2,$3,$4,$10}}' ${cpg_file} > cpgtmp.bed
 
-        bedtools intersect -wa -wb -a gene_sv.${flank}.bed -b cpgtmp.bed > cpg_by_genes_SV.dist.${flank}.bed
+        bedtools intersect -wa -wb -a ${gene_sv_bed} -b cpgtmp.bed > cpg_by_genes_SV.dist.${flank}.bed
 
         python3.10 scripts/executable_scripts/sv_to_gene_cpg.py --gene-sv-cpg cpg_by_genes_SV.dist.${flank}.bed --out-gene-sv-cpg sv_to_gene_cpg.dist.${flank}.tsv
     >>>
