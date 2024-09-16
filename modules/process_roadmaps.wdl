@@ -25,7 +25,7 @@ task process_roadmaps{
         
         for i in {1..25}
         do
-        scripts/executable_scripts/sv_to_gene_roadmap.sh ${outdir}/intermediates/gene_sv.${flank}.bed processed_roadmaps roadmap_multitissue_sv_to_gene.generic.${i}.tsv ${i}
+        scripts/executable_scripts/sv_to_gene_roadmap.sh gene_sv.${flank}.bed processed_roadmaps roadmap_multitissue_sv_to_gene.generic.${i}.tsv ${i}
         scripts/executable_scripts/sv_to_gene_roadmap.sh gene_sv.${flank}.bed processed_roadmaps roadmap_multitissue_sv_to_gene.tss.${i}.tsv ${i}
         scripts/executable_scripts/sv_to_gene_roadmap.sh gene_sv.${flank}.bed processed_roadmaps roadmap_multitissue_sv_to_gene.tes.${i}.tsv ${i}
         done
