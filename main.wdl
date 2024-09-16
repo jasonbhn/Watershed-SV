@@ -196,8 +196,6 @@ workflow Watershed_SV {
             input:
                 TADs_dir=TADs_dir,
                 genome_bound_file=genome_bound_file,
-                TAD_5000_flank_gene_SV=#Is this necessary?
-                TAD_cleaned=#Is this necessary?
                 gene_sv_bed=sv_file
         }
 
