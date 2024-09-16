@@ -14,7 +14,9 @@ import "modules/sv_to_geneABC.wdl" as sv_to_geneABC
 import "modules/sv_to_gene_dist.wdl" as sv_to_gene_dist
 import "modules/sv_to_gene_dist.wdl" as sv_to_gene_cpg
 import "modules/sv_to_gene_enhancers.wdl" as sv_to_gene_enhancers
-import "modules/sv_to_gene_flank_processing.wdl" as sv_to_gene_flank_processing
+import "modules/sv_to_gene_tss_flank_processing.wdl" as sv_to_gene_flank_tss_processing
+import "modules/sv_to_gene_tes_flank_processing.wdl" as sv_to_gene_flank_tes_processing
+import "modules/sv_to_gene_slop_processing.wdl" as sv_to_gene_slop_processing
 import "modules/sv_to_gene_processing.wdl" as sv_to_gene_processing
 import "modules/sv_to_gene_remap.wdl" as sv_to_gene_remap
 import "modules/sv_to_gene_tad.wdl" as sv_to_gene_tad
@@ -99,6 +101,54 @@ workflow Watershed_SV {
             filters=filters,
             filter_ethnicity,
             filter_rare
+    }
+
+    call extract_gene_exec {
+        input:
+            gencode_genes=gencode_genes,
+            genome_bound_file=genome_bound_file
+    }
+
+    call sv_to_gene_processing {
+        input: 
+            flank=flank,
+            pipeline_bed=extract_rare_variants.pipeline_input,
+            genes_bed=extract_genes_exec.genes
+    }
+
+    call sv_to_gene_flank_tss_processing {
+        input:
+            flank=flank,
+            genome_bound_file=genome_bound_file,
+            genes_bed=extract_genes_exec.genes,
+            pipeline_bed=extract_rare_variants.pipeline_input
+    }
+
+    call sv_to_gene_flank_tes_processing {
+        input:
+            flank=flank,
+            genome_bound_file=genome_bound_file,
+            genes_bed=extract_genes_exec.genes,
+            pipeline_bed=extract_rare_variants.pipeline_input
+    }
+
+    call sv_to_gene_slop_processing {
+        input:
+            flank=flank,
+            genome_bound_file=genome_bound_file,
+            genes_bed=genes_bed,
+            pipeline_bed=extract_rare_variants.pipeline_input
+    }
+
+    call sv_to_exon {
+        input:
+            flank=flank,
+            exon_bed=extract_gene_exec.exons,
+            gene_sv_bed=sv_to_gene_processing.gene_sv_bed
+    }
+
+    scatter (sv_file in [sv_to_gene_processing.gene_sv_bed, sv_to_gene_tes_flank_processing.gene_sv_bed, sv_to_gene_tss_flank_processing.gene_sv_bed]) {
+        #fix the modules to be able to accept these values as inputs
     }
 
     output {
