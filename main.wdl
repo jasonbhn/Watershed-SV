@@ -222,19 +222,19 @@ workflow Watershed_SV {
             call collect_files {
                 input:
                     files=[]
-                    outdir=annotations_dir + "/" + intermediates
+                    outdir=annotations_dir + "/intermediates"
             }
         if (sv_file == sv_to_gene_tes_flank_processing.gene_sv_bed):
             call collect_files {
                 input:
                     files=[]
-                    outdir=annotations_dir + "/" + intermediates_tes_flank
+                    outdir=annotations_dir + "/intermediates_tes_flank"
             }
         if (sv_file == sv_to_gene_tss_flank_processing.gene_sv_bed):
             call collect_files {
                 input:
                     files=[]
-                    outdir=annotations_dir + "/" + intermediates_tss_flank
+                    outdir=annotations_dir + "/intermediates_tss_flank"
             }
         ### End Pseudocode ###
 
