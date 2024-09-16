@@ -50,6 +50,7 @@ workflow Watershed_SV {
             input_vcf=input_vcf,
             metadata=metadata,
             pipeline=pipeline,
+            filters=filters,
             filter_ethnicity,
             filter_rare
     }
