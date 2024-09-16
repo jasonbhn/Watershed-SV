@@ -1,6 +1,6 @@
 version 1.0
 
-task gene_annotations_processing {
+task extract_gene_exec {
     input {
         File gencode_genes 
         File genome_bound_file
