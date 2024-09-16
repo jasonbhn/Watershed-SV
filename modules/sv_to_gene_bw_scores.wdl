@@ -13,7 +13,7 @@ task sv_to_gene_bw_scores {
     }
     
     output{
-        File gene_sv_score = "${name}_by_genes_SV.flank}.tsv"
+        File gene_sv_score = "${name}_by_genes_SV.{flank}.tsv"
     }
     
     runtime{

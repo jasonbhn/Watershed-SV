@@ -18,9 +18,9 @@ task sv_to_gene_processing{
         disks: "local-disk ${disk_space} HDD"
         cpu: "${ncpu}"
     }
-}
 
 
-command{
-    bedtools intersect -a ${pipeline_bed} -b ${genes_bed} -wb | awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > gene_sv.${flank}.bed
+    command <<<
+        bedtools intersect -a ${pipeline_bed} -b ${genes_bed} -wb | awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > gene_sv.${flank}.bed
+    >>>
 }
