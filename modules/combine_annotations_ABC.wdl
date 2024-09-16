@@ -63,7 +63,7 @@ task combine_annotations_ABC {
                 --collapse-mode ${collapse_mode} \
                 --remove-control-genes \
                 --flank ${flank} \
-                --zscore-threshold ${zscore_threashold} \
+                --zscore-threshold ${zscore_threshold} \
                 --minimum-support-tissue-count ${min_support_tissue}
         }
         if(!${remove_control_genes}){
@@ -88,7 +88,7 @@ task combine_annotations_ABC {
                 --collapse-mode ${collapse_mode} \
                 --no-remove-control-genes \
                 --flank ${flank} \
-                --zscore-threshold ${zscore_threashold} \
+                --zscore-threshold ${zscore_threshold} \
                 --minimum-support-tissue-count ${min_support_tissue}
 
         }
