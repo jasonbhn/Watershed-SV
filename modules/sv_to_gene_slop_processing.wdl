@@ -10,7 +10,7 @@ task sv_to_gene_slop_processing{
     }
 
     output{
-        File "gene_sv_slop.${flank}.bed"
+        File sv_gene_slop_bed = "gene_sv_slop.${flank}.bed"
     }
 
     runtime{
