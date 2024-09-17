@@ -301,11 +301,11 @@ workflow Watershed_SV {
     }
 
     output {
-        Array[File] gene_body_tsv = glob("${outdir}/intermediates/*.tsv")
-        Array[File] gene_body_bed = glob("${outdir}/intermediates/*.bed")
-        Array[File] tes_tsv = glob("${outdir}/intermediates_tes_flank/*.tsv")
-        Array[File] tes_bed = glob("${outdir}/intermediates_tes_flank/*.bed")
-        Array[File] tss_tsv = glob("${outdir}/intermediates_tss_flank/*.tsv")
-        Array[File] tss_bed = glob("${outdir}/intermediates_tss_flank/*.bed")
+        Array[File] gene_body_tsv = glob("${outdir}/intermediates/*${flank}.tsv")
+        Array[File] gene_body_bed = glob("${outdir}/intermediates/*${flank}.bed")
+        Array[File] tes_tsv = glob("${outdir}/intermediates_tes_flank/*${flank}.tsv")
+        Array[File] tes_bed = glob("${outdir}/intermediates_tes_flank/*${flank}.bed")
+        Array[File] tss_tsv = glob("${outdir}/intermediates_tss_flank/*${flank}.tsv")
+        Array[File] tss_bed = glob("${outdir}/intermediates_tss_flank/*${flank}.bed")
     }
 }
