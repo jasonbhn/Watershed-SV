@@ -21,7 +21,6 @@ import "modules/sv_to_gene_processing.wdl" as sv_to_gene_processing
 import "modules/sv_to_gene_remap.wdl" as sv_to_gene_remap
 import "modules/sv_to_gene_tad.wdl" as sv_to_gene_tad
 import "modules/combine_annotations_ABC.wdl" as combine_annotations_ABC
-import "modules/collect_files.wd" as collect_files
 import "modules/vep.wdl" as vep
 import "modules/sv_to_geneCPG.wdl" as sv_to_gene_cpg
 
@@ -76,8 +75,21 @@ workflow Watershed_SV {
         # vep
         String vep_cache_dir
 
-        # collect_files
-        String annotations_dir
+        # combine_annotations_ABC
+        Int min_support_tissue
+        Float zscore_threshold
+        String expression_field
+        String expression_id_field
+        String maf_mode
+        String maf_field
+        String length_mode
+        String length_field
+        String CN_mode
+        String collapse_mode
+        Boolean remove_control_genes
+
+        # for all modules
+        String outdir
     }
 
     call extract_rare_variants {
@@ -87,36 +99,41 @@ workflow Watershed_SV {
             pipeline=pipeline,
             filters=filters,
             filter_ethnicity,
-            filter_rare
+            filter_rare,
+            outdir=outdir + "/intermediates"
     }
 
     call extract_gene_exec {
         input:
             gencode_genes=gencode_genes,
-            genome_bound_file=genome_bound_file
+            genome_bound_file=genome_bound_file,
+            outdir=outdir + "/intermediates"
     }
 
     call sv_to_gene_processing {
         input: 
             flank=flank,
             pipeline_bed=extract_rare_variants.pipeline_input,
-            genes_bed=extract_genes_exec.genes
+            genes_bed=extract_gene_exec.genes,
+            outdir=outdir + "/intermediates"
     }
 
     call sv_to_gene_flank_tss_processing {
         input:
             flank=flank,
             genome_bound_file=genome_bound_file,
-            genes_bed=extract_genes_exec.genes,
-            pipeline_bed=extract_rare_variants.pipeline_input
+            genes_bed=extract_gene_exec.genes,
+            pipeline_bed=extract_rare_variants.pipeline_input,
+            outdir=outdir + "/intermediates"
     }
 
     call sv_to_gene_flank_tes_processing {
         input:
             flank=flank,
             genome_bound_file=genome_bound_file,
-            genes_bed=extract_genes_exec.genes,
-            pipeline_bed=extract_rare_variants.pipeline_input
+            genes_bed=extract_gene_exec.genes,
+            pipeline_bed=extract_rare_variants.pipeline_input,
+            outdir=outdir + "/intermediates"
     }
 
     call sv_to_gene_slop_processing {
@@ -124,82 +141,95 @@ workflow Watershed_SV {
             flank=flank,
             genome_bound_file=genome_bound_file,
             genes_bed=genes_bed,
-            pipeline_bed=extract_rare_variants.pipeline_input
+            pipeline_bed=extract_rare_variants.pipeline_input,
+            outdir=outdir + "/intermediates"
     }
 
     call sv_to_exon {
         input:
             flank=flank,
             exon_bed=extract_gene_exec.exons,
-            gene_sv_bed=sv_to_gene_processing.gene_sv_bed
+            gene_sv_bed=sv_to_gene_processing.gene_sv_bed,
+            outdir=outdir + "/intermediates"
     }
 
-    scatter (sv_file in [sv_to_gene_processing.gene_sv_bed, sv_to_gene_tes_flank_processing.gene_sv_bed, sv_to_gene_tss_flank_processing.gene_sv_bed]) {
+    sv_files = [sv_to_gene_processing.gene_sv_bed, sv_to_gene_flank_tes_processing.gene_sv_bed, sv_to_gene_flank_tss_processing.gene_sv_bed] 
+    outdirs = [outdir + "/intermediates", outdir + "/intermediates_tes_flank", outdir + "/intermediates_tss_flank"]
+
+    scatter (idx in range(len(sv_files))) {
         call sv_to_gene_remap {
             input:
                 flank=flank,
                 remap_crm=remap_crm,
-                gene_sv_bed=sv_file
+                gene_sv_bed=sv_files[i],
+                outdir=outdirs[i]
         }
 
         call sv_to_geneABC {
             input:
-                gene_sv_bed=sv_file,
-                ABC_enhancers=ABC_enhancers
+                gene_sv_bed=sv_files[i],
+                ABC_enhancers=ABC_enhancers,
+                outdir=outdirs[i]
         }
 
         call sv_to_gene_cpg {
             input:
                 cpg_file=cpg_file,
                 flank=flank,
-                gene_sv_bed=sv_file
+                gene_sv_bed=sv_files[i],
+                outdir=outdirs[i]
         }
         
         call GC {
             input:
                 bw=bw_GC,
-                gene_sv_bed=sv_file,
+                gene_sv_bed=sv_files[i],
                 name="mean_GC_content",
                 stat_method="mean",
                 upper_limit=100,
-                lower_limit=0
+                lower_limit=0,
+                outdir=outdirs[i]
         }
 
         call CADD {
             input:
                 bw=bw_CADD,
-                gene_sv_bed=sv_file,
+                gene_sv_bed=sv_files[i],
                 name="top10_CADD",
                 stat_method="top10_mean",
                 upper_limit=99,
-                lower_limit=0
+                lower_limit=0,
+                outdir=outdirs[i]
         }
 
         call linsight {
             input:
                 bw=bw_linsight,
-                gene_sv_bed=sv_file,
+                gene_sv_bed=sv_files[i],
                 name="top10_LINSIGHT",
                 stat_method="top10_mean",
                 upper_limit=1,
-                lower_limit=0
+                lower_limit=0,
+                outdir=outdirs[i]
         }
 
         call phastcon20 {
             input:
                 bw=bw_phastcon,
-                gene_sv_bed=sv_file,
+                gene_sv_bed=sv_files[i],
                 name="top10_phastCON",
                 stat_method="top10_mean",
                 upper_limit=1,
-                lower_limit=0
+                lower_limit=0,
+                outdir=outdirs[i]
         }
 
         call sv_to_gene_tad {
             input:
                 TADs_dir=TADs_dir,
                 genome_bound_file=genome_bound_file,
-                gene_sv_bed=sv_file
+                gene_sv_bed=sv_files[i],
+                outdir=outdirs[i]
         }
 
         call merge_enhancers {
@@ -207,60 +237,52 @@ workflow Watershed_SV {
                 flank=flank,
                 enhancers=enhancers,
                 primary_cells=primary_cells,
-                gene_sv_bed=sv_file
+                gene_sv_bed=sv_files[i],
+                outdir=outdirs[i]
         }
 
         call process_roadmaps {
             input:
                 flank=flank,
                 roadmap_dir=roadmap_dir,
-                gene_sv_bed=sv_file
+                gene_sv_bed=sv_files[i],
+                outdir=outdirs[i]
         }
-
-        ### Pseudocode ###
-        if (sv_file == sv_to_gene_processing.gene_sv_bed):
-            call collect_files {
-                input:
-                    files=[]
-                    outdir=annotations_dir + "/intermediates"
-            }
-        if (sv_file == sv_to_gene_tes_flank_processing.gene_sv_bed):
-            call collect_files {
-                input:
-                    files=[]
-                    outdir=annotations_dir + "/intermediates_tes_flank"
-            }
-        if (sv_file == sv_to_gene_tss_flank_processing.gene_sv_bed):
-            call collect_files {
-                input:
-                    files=[]
-                    outdir=annotations_dir + "/intermediates_tss_flank"
-            }
-        ### End Pseudocode ###
-
     }
 
     call sv_to_gene_dist {
         input:
             flank=flank,
-            gene_bed=extract_genes_exec.genes,
+            gene_bed=extract_gene_exec.genes,
             gene_sv_slop_bed=sv_to_gene_slop_processing.sv_gene_slop_bed,
             gene_tss=extract_gene_exec.gene_tss,
-            gene_tes=extract_gene_exec.tes
+            gene_tes=extract_gene_exec.tes,
+            outdir=outdir + "/intermediates"
     }
 
     call vep {
         input:
             flank=flank,
-            vep_cache_dir=vep_cache_dir
+            vep_cache_dir=vep_cache_dir,
+            outdir=outdir + "/intermediates"
     }
 
-    scatter (directory in ["intermediates", "intermediates_tss_flank", "intermediates_tes_flank"]) {
-        call collect_files {
-            input:
-                files=[] #FILL THIS BADDIE OUT
-                outdir=${annotations_dir}/${directory} #Not sure if WDL will read this correctly?
-        }    
+    call combine_annotations_abc {
+        input:
+            flank=flank,
+            min_support_tissue=min_support_tissue,
+            zscore_threshold=zscore_threshold,
+            ### FILES GO HERE ###
+            annotations_dir=annotations_dir,
+            expression_field=expression_field,
+            expression_id_field=expression_id_field,
+            maf_mode=maf_mode,
+            maf_field=maf_field,
+            length_mode=legnth_mode,
+            length_field=length_field,
+            CN_mode=CN_mode,
+            collapse_mode=collapse_mode,
+            remove_control_genes=remove_control_genes
     }
 
     output {
