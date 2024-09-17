@@ -169,75 +169,75 @@ workflow Watershed_SV {
             input:
                 flank=flank,
                 remap_crm=remap_crm,
-                gene_sv_bed=sv_files[i],
-                outdir=outdirs[i]
+                gene_sv_bed=sv_files[idx],
+                outdir=outdirs[idx]
         }
 
         call sv_to_geneABC {
             input:
-                gene_sv_bed=sv_files[i],
+                gene_sv_bed=sv_files[idx],
                 ABC_enhancers=ABC_enhancers,
-                outdir=outdirs[i]
+                outdir=outdirs[idx]
         }
 
         call sv_to_gene_cpg {
             input:
                 cpg_file=cpg_file,
                 flank=flank,
-                gene_sv_bed=sv_files[i],
-                outdir=outdirs[i]
+                gene_sv_bed=sv_files[idx],
+                outdir=outdirs[idx]
         }
         
         call GC {
             input:
                 bw=bw_GC,
-                gene_sv_bed=sv_files[i],
+                gene_sv_bed=sv_files[idx],
                 name="mean_GC_content",
                 stat_method="mean",
                 upper_limit=100,
                 lower_limit=0,
-                outdir=outdirs[i]
+                outdir=outdirs[idx]
         }
 
         call CADD {
             input:
                 bw=bw_CADD,
-                gene_sv_bed=sv_files[i],
+                gene_sv_bed=sv_files[idx],
                 name="top10_CADD",
                 stat_method="top10_mean",
                 upper_limit=99,
                 lower_limit=0,
-                outdir=outdirs[i]
+                outdir=outdirs[idx]
         }
 
         call linsight {
             input:
                 bw=bw_linsight,
-                gene_sv_bed=sv_files[i],
+                gene_sv_bed=sv_files[idx],
                 name="top10_LINSIGHT",
                 stat_method="top10_mean",
                 upper_limit=1,
                 lower_limit=0,
-                outdir=outdirs[i]
+                outdir=outdirs[idx]
         }
 
         call phastcon20 {
             input:
                 bw=bw_phastcon,
-                gene_sv_bed=sv_files[i],
+                gene_sv_bed=sv_files[idx],
                 name="top10_phastCON",
                 stat_method="top10_mean",
                 upper_limit=1,
                 lower_limit=0,
-                outdir=outdirs[i]
+                outdir=outdirs[idx]
         }
 
         call sv_to_gene_tad {
             input:
                 TADs_dir=TADs_dir,
                 genome_bound_file=genome_bound_file,
-                gene_sv_bed=sv_files[i],
-                outdir=outdirs[i]
+                gene_sv_bed=sv_files[idx],
+                outdir=outdirs[idx]
         }
 
         call merge_enhancers {
@@ -245,16 +245,16 @@ workflow Watershed_SV {
                 flank=flank,
                 enhancers=enhancers,
                 primary_cells=primary_cells,
-                gene_sv_bed=sv_files[i],
-                outdir=outdirs[i]
+                gene_sv_bed=sv_files[idx],
+                outdir=outdirs[idx]
         }
 
         call process_roadmaps {
             input:
                 flank=flank,
                 roadmap_dir=roadmap_dir,
-                gene_sv_bed=sv_files[i],
-                outdir=outdirs[i]
+                gene_sv_bed=sv_files[idx],
+                outdir=outdirs[idx]
         }
     }
 
