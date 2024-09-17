@@ -273,7 +273,7 @@ workflow Watershed_SV {
             min_support_tissue=min_support_tissue,
             zscore_threshold=zscore_threshold,
             ### FILES GO HERE ###
-            annotations_dir=annotations_dir,
+            annotations_dir=outdir,
             expression_field=expression_field,
             expression_id_field=expression_id_field,
             maf_mode=maf_mode,
@@ -286,6 +286,11 @@ workflow Watershed_SV {
     }
 
     output {
-
+        Array[File] gene_body_tsv = glob("${outdir}/intermediates/*.tsv")
+        Array[File] gene_body_bed = glob("${outdir}/intermediates/*.bed")
+        Array[File] tes_tsv = glob("${outdir}/intermediates_tes_flank/*.tsv")
+        Array[File] tes_bed = glob("${outdir}/intermediates_tes_flank/*.bed")
+        Array[File] tss_tsv = glob("${outdir}/intermediates_tss_flank/*.tsv")
+        Array[File] tss_bed = glob("${outdir}/intermediates_tss_flank/*.bed")
     }
 }
