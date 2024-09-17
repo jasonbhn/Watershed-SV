@@ -7,10 +7,12 @@ task sv_to_gene_slop_processing{
         File genome_bound_file
         File genes_bed
         File pipeline_bed
+
+        String outdir
     }
 
     output{
-        File sv_gene_slop_bed = "gene_sv_slop.${flank}.bed"
+        File sv_gene_slop_bed = "${outdir}/gene_sv_slop.${flank}.bed"
     }
 
     runtime{
@@ -23,7 +25,7 @@ task sv_to_gene_slop_processing{
     command <<<
         bedtools slop -g ${genome_bound_file} -i ${genes_bed} -b ${flank} | 
         bedtools intersect -a ${pipeline_bed} -b stdin -wb | 
-        awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > gene_sv_slop.${flank}.bed
+        awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > ${outdir}/gene_sv_slop.${flank}.bed
     >>>
 
 }

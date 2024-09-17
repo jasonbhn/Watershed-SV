@@ -4,13 +4,15 @@ task extract_gene_exec {
     input {
         File gencode_genes 
         File genome_bound_file
+
+        String outdir
     }
 
     output {
-        File genes = "genes.bed"
-        File exons = "exons.bed"
-        File gene_tss = "gene_tss.tsv"
-        File gene_tes = "gene_tes.tsv"
+        File genes = "${outdir}/genes.bed"
+        File exons = "${outdir}/exons.bed"
+        File gene_tss = "${outdir}/gene_tss.tsv"
+        File gene_tes = "${outdir}/gene_tes.tsv"
     }
 
     runtime {
@@ -23,10 +25,10 @@ task extract_gene_exec {
     command <<<
         python3.10 scripts/executable_scripts/extract_gene_exec.py \
             --gencode-annotations ${gencode_genes} \
-            --out-gene-bed genes.bed \
-            --out-exon-bed exons.bed \
-            --out-gene-tss gene_tss.tsv \
-            --out-gene-tes gene_tes.tsv \
+            --out-gene-bed ${outdir}/genes.bed \
+            --out-exon-bed ${outdir}/exons.bed \
+            --out-gene-tss ${outdir}/gene_tss.tsv \
+            --out-gene-tes ${outdir}/gene_tes.tsv \
             --genome-bound ${genome_bound_file}
     >>>
 }

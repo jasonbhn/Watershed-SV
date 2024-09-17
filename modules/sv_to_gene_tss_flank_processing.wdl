@@ -7,10 +7,12 @@ task sv_to_gene_tss_flank_processing {
         File genome_bound_file
         File genes_bed
         File pipeline_bed
+
+        String outdir
     }
 
     output {
-        File gene_sv_flank_bed = "gene_sv_flank.bed" 
+        File gene_sv_flank_bed = "${outdir}/gene_sv_flank.bed" 
     }
 
     runtime {
@@ -23,6 +25,6 @@ task sv_to_gene_tss_flank_processing {
     command <<<
         bedtools flank -g ${genome_bound_file} -i ${genes_bed} -l ${flank} -r 0 -s | \
         bedtools intersect -a ${pipeline_bed} -b stdin -wb | \
-        awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > gene_sv_flank.bed
+        awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > ${outdir}/gene_sv_flank.bed
     >>>
 }

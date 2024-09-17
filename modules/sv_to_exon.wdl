@@ -6,10 +6,12 @@ task sv_to_exon{
 
         File exon_bed
         File gene_sv_bed
+
+        String outdir
     }
 
     output{
-        File exon_sv_tsv = "exon_sv.${flank}.tsv"
+        File exon_sv_tsv = "${outdir}/exon_sv.${flank}.tsv"
     }
 
     runtime{
@@ -26,6 +28,6 @@ task sv_to_exon{
         
         python3.10 scripts/executable_scripts/extract_SV_exon_info.py \
         --input exon_sv.${flank}.unprocessed_info.tsv \
-        --output exon_sv.${flank}.tsv
+        --output ${outdir}/exon_sv.${flank}.tsv
     >>>
 }

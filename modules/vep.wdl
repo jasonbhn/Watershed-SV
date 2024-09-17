@@ -4,10 +4,11 @@ task vep {
     input{
         Int flank
         String vep_cache_dir
+        String outdir
     }
 
     output{
-        File vep = "vep_out.csv"
+        File vep = "${outdir}/vep_out.csv"
     }
 
     runtime{
@@ -34,6 +35,6 @@ task vep {
         --overlaps \
         --distance 10000
 
-        python3.10 scripts/executable_scripts/extract_sv_vep_annotations.py tmp.csv vep_out.csv
+        python3.10 scripts/executable_scripts/extract_sv_vep_annotations.py tmp.csv ${outdir}/vep_out.csv
     >>>
 }

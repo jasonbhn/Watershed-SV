@@ -7,16 +7,17 @@ task extract_rare_variants{
 
         String pipeline
         Array[String] filters
+        String outdir
 
         Boolean filter_ethnicity
         Boolean filter_rare
     }
 
     output{
-        File pipeline_input = "pipeline_input.bed"
-        File vep_input = "vep_input.tsv"
-        File pipeline_maf = "pipeline_maf.tsv"
-        File pipeline_input_genotypes = "pipeline_input_genotypes.tsv"
+        File pipeline_input = "${outdir}/pipeline_input.bed"
+        File vep_input = "${outdir}/vep_input.tsv"
+        File pipeline_maf = "${outdir}/pipeline_maf.tsv"
+        File pipeline_input_genotypes = "${outdir}/pipeline_input_genotypes.tsv"
     }
 
     runtime{
@@ -39,10 +40,10 @@ task extract_rare_variants{
                 --filter-ethnicity \
                 --metadata $metadata \
                 --genotype-filters '~{sep=" " filters}' \
-                --out-annotsv vep_input.tsv \
-                --out-generic pipeline_input.bed \
-                --out-maf pipeline_maf.tsv \
-                --out-genotype pipeline_input_genotypes.tsv
+                --out-annotsv ${outdir}/vep_input.tsv \
+                --out-generic ${outdir}/pipeline_input.bed \
+                --out-maf ${outdir}/pipeline_maf.tsv \
+                --out-genotype ${outdir}/pipeline_input_genotypes.tsv
               else 
                 python3.10 scripts/executable_scripts/extract_rare_variants.py \
                 --vcf $input_vcf \
@@ -51,10 +52,10 @@ task extract_rare_variants{
                 --filter-ethnicity \
                 --metadata $metadata \
                 --genotype-filters '~{sep=" " filters}' \
-                --out-annotsv vep_input.tsv \
-                --out-generic pipeline_input.bed \
-                --out-maf pipeline_maf.tsv \
-                --out-genotype pipeline_input_genotypes.tsv
+                --out-annotsv ${outdir}/vep_input.tsv \
+                --out-generic ${outdir}/pipeline_input.bed \
+                --out-maf ${outdir}/pipeline_maf.tsv \
+                --out-genotype ${outdir}/pipeline_input_genotypes.tsv
               fi
             else
               if [ "$filter_rare" == "true" ]; then 
@@ -64,20 +65,20 @@ task extract_rare_variants{
                 --extract-genotype \
                 --infer-rareness \
                 --genotype-filters '~{sep=" " filters}' \
-                --out-annotsv vep_input.tsv \
-                --out-generic pipeline_input.bed \
-                --out-maf pipeline_maf.tsv \
-                --out-genotype pipeline_input_genotypes.tsv
+                --out-annotsv ${outdir}/vep_input.tsv \
+                --out-generic ${outdir}/pipeline_input.bed \
+                --out-maf ${outdir}/pipeline_maf.tsv \
+                --out-genotype ${outdir}/pipeline_input_genotypes.tsv
               else
                 python3.10 scripts/executable_scripts/extract_rare_variants.py \
                 --vcf $input_vcf \
                 --lifted-coord $liftover_bed \
                 --extract-genotype \
                 --genotype-filters '~{sep=" " filters}' \
-                --out-annotsv vep_input.tsv \
-                --out-generic pipeline_input.bed \
-                --out-maf pipeline_maf.tsv \
-                --out-genotype pipeline_input_genotypes.tsv
+                --out-annotsv ${outdir}/vep_input.tsv \
+                --out-generic ${outdir}/pipeline_input.bed \
+                --out-maf ${outdir}/pipeline_maf.tsv \
+                --out-genotype ${outdir}/pipeline_input_genotypes.tsv
               fi
             fi
           fi
@@ -87,9 +88,9 @@ task extract_rare_variants{
           --vcf $input_vcf \
           --extract-genotype \
           --genotype-filters ${filters} \
-          --out-annotsv vep_input.tsv \
-          --out-generic pipeline_input.bed \
-          --out-genotype pipeline_input_genotypes.tsv
+          --out-annotsv ${outdir}/vep_input.tsv \
+          --out-generic ${outdir}/pipeline_input.bed \
+          --out-genotype ${outdir}/pipeline_input_genotypes.tsv
           fi     
         fi
     >>>

@@ -3,13 +3,16 @@ version 1.0
 task sv_to_geneCPG{
     input{
         File cpg_file
+        File gene_sv_bed
+
         Int flank
 
-        File gene_sv_bed
+        String outdir
+
     }
 
     outputs{
-        File sv_to_gene_cpg.dist.${flank}.tsv
+        File sv_to_gene_cpg_dist = "${outdir}/sv_to_gene_cpg.dist.${flank}.tsv"
     }
 
     runtime{
@@ -24,6 +27,6 @@ task sv_to_geneCPG{
 
         bedtools intersect -wa -wb -a ${gene_sv_bed} -b cpgtmp.bed > cpg_by_genes_SV.dist.${flank}.bed
 
-        python3.10 scripts/executable_scripts/sv_to_gene_cpg.py --gene-sv-cpg cpg_by_genes_SV.dist.${flank}.bed --out-gene-sv-cpg sv_to_gene_cpg.dist.${flank}.tsv
+        python3.10 scripts/executable_scripts/sv_to_gene_cpg.py --gene-sv-cpg cpg_by_genes_SV.dist.${flank}.bed --out-gene-sv-cpg ${outdir}/sv_to_gene_cpg.dist.${flank}.tsv
     >>>
 }

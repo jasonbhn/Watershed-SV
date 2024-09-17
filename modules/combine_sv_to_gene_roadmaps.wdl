@@ -5,10 +5,11 @@ task combine_sv_to_gene_roadmaps {
         Int flank
 
         String roadmap_dir
+        String outdir
     }
 
     output {
-        File gene_sv_roadmaps = "combined_roadmaps.dist.${flank}.tsv"
+        File gene_sv_roadmaps = "${outdir}/combined_roadmaps.dist.${flank}.tsv"
     }
 
     runtime {
@@ -21,6 +22,6 @@ task combine_sv_to_gene_roadmaps {
     command <<<
         python3.10 scripts/executable_scripts/combine_roadmaps.py \
             --gene-sv-roadmap-dir ${roadmap_dir} \
-            --out-combined-roadmap combined_roadmaps.dist.${flank}.tsv
+            --out-combined-roadmap ${outdir}/combined_roadmaps.dist.${flank}.tsv
     >>>
 }
