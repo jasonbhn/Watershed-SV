@@ -26,7 +26,7 @@ import "modules/sv_to_geneCPG.wdl" as sv_to_gene_cpg
 
 workflow Watershed_SV {
     input {
-        # extract_rare_varians
+        # extract_rare_variants
         File input_vcf
         File metadata
         String pipeline
@@ -76,6 +76,14 @@ workflow Watershed_SV {
         String vep_cache_dir
 
         # combine_annotations_ABC
+        File sv_VCF
+        File genotype_VCF
+        File gene_list
+        File sv_gene_pairs
+        File expression_file
+        File maf_file
+        File length_file
+        File CN_file
         Int min_support_tissue
         Float zscore_threshold
         String expression_field
@@ -272,7 +280,14 @@ workflow Watershed_SV {
             flank=flank,
             min_support_tissue=min_support_tissue,
             zscore_threshold=zscore_threshold,
-            ### FILES GO HERE ###
+            sv_VCF=sv_VCF,
+            genotype_VCF=genotype_VCF,
+            gene_list=gene_list,
+            sv_gene_pairs=sv_gene_pairs,
+            expression_file=expression_file,
+            maf_file=maf_file,
+            length_file=length_file,
+            CN_file=CN_file,
             annotations_dir=outdir,
             expression_field=expression_field,
             expression_id_field=expression_id_field,
