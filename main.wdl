@@ -196,6 +196,7 @@ workflow Watershed_SV {
                 stat_method="mean",
                 upper_limit=100,
                 lower_limit=0,
+                flank=flank,
                 outdir=outdirs[idx]
         }
 
@@ -207,6 +208,7 @@ workflow Watershed_SV {
                 stat_method="top10_mean",
                 upper_limit=99,
                 lower_limit=0,
+                flank=flank,
                 outdir=outdirs[idx]
         }
 
@@ -218,6 +220,7 @@ workflow Watershed_SV {
                 stat_method="top10_mean",
                 upper_limit=1,
                 lower_limit=0,
+                flank=flank,
                 outdir=outdirs[idx]
         }
 
@@ -229,6 +232,7 @@ workflow Watershed_SV {
                 stat_method="top10_mean",
                 upper_limit=1,
                 lower_limit=0,
+                flank=flank,
                 outdir=outdirs[idx]
         }
 

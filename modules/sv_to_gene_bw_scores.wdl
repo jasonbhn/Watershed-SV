@@ -11,6 +11,7 @@ task sv_to_gene_bw_scores {
     
         Int upper_limit
         Int lower_limit
+        Int flank
     }
     
     output{
