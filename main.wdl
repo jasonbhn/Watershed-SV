@@ -23,6 +23,7 @@ import "modules/sv_to_gene_tad.wdl" as sv_to_gene_tad
 import "modules/combine_annotations_ABC.wdl" as combine_annotations_ABC
 import "modules/vep.wdl" as vep
 import "modules/sv_to_geneCPG.wdl" as sv_to_gene_cpg
+import "train_test_predict.wdl" as train_test_predict
 
 workflow Watershed_SV {
     input {
@@ -298,6 +299,16 @@ workflow Watershed_SV {
             CN_mode=CN_mode,
             collapse_mode=collapse_mode,
             remove_control_genes=remove_control_genes
+    }
+
+    call train_test_predict {
+        input:
+            training=combine_annotations_abc.combined_dataset
+            testings=testings
+            mode="predict"
+            out_prefix="watershed_out"
+            min_af_impute_mode=min_af_impute_mode
+            min_af_value=min_af_value
     }
 
     output {
