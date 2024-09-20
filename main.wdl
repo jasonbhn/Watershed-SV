@@ -97,6 +97,13 @@ workflow Watershed_SV {
         String collapse_mode
         Boolean remove_control_genes
 
+        # train_test_predict
+        File testings
+        Int min_af_impute_mode
+        int min_af_value
+        String mode
+        String out_prefix
+
         # for all modules
         String outdir
     }
