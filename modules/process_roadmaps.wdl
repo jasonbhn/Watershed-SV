@@ -4,14 +4,13 @@ task process_roadmaps{
     input{
         File gene_sv_bed
         String roadmap_dir
-        String outdir
         Int flank
     }
 
     output{
-        Array[File] generic_roadmap = glob("${outdir}/roadmap_multitissue_sv_to_gene.generic.*.tsv")
-        Array[File] tss_roadmap = glob("${outdir}/roadmap_multitissue_sv_to_gene.tss.*.tsv")
-        Array[File] tes_roadmap = glob("${outdir}/roadmap_multitissue_sv_to_gene.tes.*.tsv")
+        Array[File] generic_roadmap = glob("roadmap_multitissue_sv_to_gene.generic.*.tsv")
+        Array[File] tss_roadmap = glob("roadmap_multitissue_sv_to_gene.tss.*.tsv")
+        Array[File] tes_roadmap = glob("roadmap_multitissue_sv_to_gene.tes.*.tsv")
     }
 
     runtime{
@@ -27,9 +26,9 @@ task process_roadmaps{
         
         for i in {1..25}
         do
-        scripts/executable_scripts/sv_to_gene_roadmap.sh ${gene_sv_bed} processed_roadmaps ${outdir}/roadmap_multitissue_sv_to_gene.generic.${i}.tsv ${i}
-        scripts/executable_scripts/sv_to_gene_roadmap.sh ${gene_sv_bed} processed_roadmaps ${outdir}/roadmap_multitissue_sv_to_gene.tss.${i}.tsv ${i}
-        scripts/executable_scripts/sv_to_gene_roadmap.sh ${gene_sv_bed} processed_roadmaps ${outdir}/roadmap_multitissue_sv_to_gene.tes.${i}.tsv ${i}
+        scripts/executable_scripts/sv_to_gene_roadmap.sh ${gene_sv_bed} processed_roadmaps roadmap_multitissue_sv_to_gene.generic.${i}.tsv ${i}
+        scripts/executable_scripts/sv_to_gene_roadmap.sh ${gene_sv_bed} processed_roadmaps roadmap_multitissue_sv_to_gene.tss.${i}.tsv ${i}
+        scripts/executable_scripts/sv_to_gene_roadmap.sh ${gene_sv_bed} processed_roadmaps roadmap_multitissue_sv_to_gene.tes.${i}.tsv ${i}
         done
 
     >>>

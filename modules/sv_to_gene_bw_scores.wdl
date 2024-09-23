@@ -7,7 +7,6 @@ task sv_to_gene_bw_scores {
     
         String name
         String stat_method
-        String outdir
     
         Int upper_limit
         Int lower_limit
@@ -15,7 +14,7 @@ task sv_to_gene_bw_scores {
     }
     
     output{
-        File gene_sv_score = "${outdir}/${name}_by_genes_SV.${flank}.tsv"
+        File gene_sv_score = "${name}_by_genes_SV.${flank}.tsv"
     }
     
     runtime{
@@ -33,6 +32,6 @@ task sv_to_gene_bw_scores {
         --stat-method ${stat_method} \
         --score-upper-limit ${upper_limit} \
         --score-lower-limit ${lower_limit} \
-        --out-gene-sv-score ${outdir}/${name}_by_genes_SV.{flank}.tsv
+        --out-gene-sv-score ${name}_by_genes_SV.{flank}.tsv
         >>>
 }

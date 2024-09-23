@@ -5,12 +5,10 @@ task sv_to_gene_tad{
         File TADs_dir
         File genome_bound_file
         File gene_sv_bed
-
-        String outdir
     }
 
     output{
-        File sv_to_genes_tad = "${outdir}/TAD_boundary_by_genes_SV.dist.${flank}.tsv"
+        File sv_to_genes_tad = "TAD_boundary_by_genes_SV.dist.${flank}.tsv"
     }
 
     runtime{
@@ -30,7 +28,7 @@ task sv_to_gene_tad{
         bedtools intersect -wa -wb -a TAD_5000_flank_gene_SV.bed -b TAD_cleaned/*  -filenames | \
         sort -k4,4 -k6,6 | \
         bedtools groupby -i stdin -g 4,6 -c 7 -o count_distinct | \
-        awk 'BEGIN{{print "SV\tGene\tnum_TADs"}};{{OFS="\t";print}}' > ${outdir}/TAD_boundary_by_genes_SV.dist.${flank}.tsv
+        awk 'BEGIN{{print "SV\tGene\tnum_TADs"}};{{OFS="\t";print}}' > TAD_boundary_by_genes_SV.dist.${flank}.tsv
 
     >>>
 }

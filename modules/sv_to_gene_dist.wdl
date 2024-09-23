@@ -8,12 +8,10 @@ task sv_to_gene_dist {
         File gene_sv_slop_bed
         File gene_tss
         File gene_tes
-
-        String outdir
     }
 
     output {
-        File sv_dist_to_gene = "${outdir}/SV_dist_to_gene.dist.${flank}.tsv"
+        File sv_dist_to_gene = "SV_dist_to_gene.dist.${flank}.tsv"
     }
 
     runtime {
@@ -30,6 +28,6 @@ task sv_to_gene_dist {
             --gene-sv ${gene_sv_slop_bed} \
             --in-gene-tss ${gene_tss} \
             --in-gene-tes ${gene_tes} \
-            --out-gene-sv-dist ${outdir}/SV_dist_to_gene.dist.${flank}.tsv
+            --out-gene-sv-dist SV_dist_to_gene.dist.${flank}.tsv
     >>>
 }

@@ -6,12 +6,10 @@ task sv_to_gene_remap {
 
         File remap_crm
         File gene_sv_bed
-        
-        String outdir
     }
 
     output {
-        File remap_crm_sv_tsv = "${outdir}/remap_crm_sv.dist.${flank}.tsv"
+        File remap_crm_sv_tsv = "remap_crm_sv.dist.${flank}.tsv"
     }
 
     runtime {
@@ -28,6 +26,6 @@ task sv_to_gene_remap {
         sort -k1,1 -k2,2 | \ 
         bedtools groupby -i stdin -g 1,2 -c 3 -o max | \ 
         awk 'BEGIN{print "SV\tGene\tremap_crm_score"};{OFS="\t";print $0}' \
-        > ${outdir}/remap_crm_sv.dist.${flank}.tsv
+        > remap_crm_sv.dist.${flank}.tsv
     >>>
 }

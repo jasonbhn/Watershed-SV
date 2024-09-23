@@ -6,12 +6,10 @@ task sv_to_gene_enhancers {
 
         File merged_enhancers
         File gene_sv_bed
-
-        String outdir
     }
 
     output {
-        File gene_sv_enhancer = "${outdir}/enhancers_by_genes_SV.dist.${flank}.tsv"
+        File gene_sv_enhancer = "enhancers_by_genes_SV.dist.${flank}.tsv"
     }
 
     runtime {
@@ -27,6 +25,6 @@ task sv_to_gene_enhancers {
         sort -k1,2 -k2,2 | \
         bedtools groupby -i stdin -g 1,2 -c 3 -o max | \
         awk 'BEGIN{print "SV\tGene\tnum_enhancers_cell_types"};{OFS="\t";print $0}' \
-        > ${outdir}/enhancers_by_genes_SV.dist.${flank}.tsv
+        > enhancers_by_genes_SV.dist.${flank}.tsv
     >>>
 }

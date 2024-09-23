@@ -6,12 +6,10 @@ task sv_to_gene_processing{
         
         File pipeline_bed
         File genes_bed
-
-        String outdir
     }
 
     output{
-        File gene_sv_bed = "${outdir}/gene_sv.${flank}.bed"
+        File gene_sv_bed = "gene_sv.${flank}.bed"
     }
 
     runtime{
@@ -23,6 +21,6 @@ task sv_to_gene_processing{
 
 
     command <<<
-        bedtools intersect -a ${pipeline_bed} -b ${genes_bed} -wb | awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > ${outdir}/gene_sv.${flank}.bed
+        bedtools intersect -a ${pipeline_bed} -b ${genes_bed} -wb | awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > gene_sv.${flank}.bed
     >>>
 }

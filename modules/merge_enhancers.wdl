@@ -7,13 +7,11 @@ task merge_enhancers {
         File enhancers
         File primary_cells
         File gene_sv_bed
-
-        String outdir
     }
 
     output {
-        File merged_enhancers = "${outdir}/primary_cells_collapsed_enhancers.bed"
-        File enhancers_by_genes = "${outdir}/enhancers_by_genes_SV.dist.${flank}.tsv"
+        File merged_enhancers = "primary_cells_collapsed_enhancers.bed"
+        File enhancers_by_genes = "enhancers_by_genes_SV.dist.${flank}.tsv"
     }
 
     runtime {
@@ -27,13 +25,13 @@ task merge_enhancers {
         python 3.10 scripts/executable_scripts/merge_enhancers.py \
             --enhancers ${enhancers} \
             --primary-cell-list ${primary_cells} \
-            --out-merged-enhancers ${outdir}/primary_cells_collapsed_enhancers.bed
+            --out-merged-enhancers primary_cells_collapsed_enhancers.bed
 
         bedtools intersect -wa -wb -a primary_cells_collapsed_enhancers.bed -b ${gene_sv_bed} | \
         awk '{OFS="\t";print $8,$10,$4}' | \
         sort -k1,1 -k2,2 | \
         bedtools groupby -i stdin -g 1,2 -c 3 -o max | \
         awk 'BEGIN{print "SV\tGene\tnum_enhancers_cell_types"};{OFS="\t";print $0}' \
-        > ${outdir}/enhancers_by_genes_SV.dist.${flank}.tsv
+        > enhancers_by_genes_SV.dist.${flank}.tsv
     >>>
 }
