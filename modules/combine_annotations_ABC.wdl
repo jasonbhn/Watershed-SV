@@ -15,8 +15,11 @@ task combine_annotations_ABC {
         File maf_file
         File length_file
         File CN_file
+        File gene_body_tar
+        File tss_tar
+        File tes_tar
 
-        String annotations_dir
+#        String annotations_dir #replacing this with $(pwd)
         String expression_field
         String expression_id_field
         String maf_mode
@@ -41,13 +44,17 @@ task combine_annotations_ABC {
     }
 
     command <<<
+        tar -xzv --file=intermediates ${gene_body_tar}
+        tar -xzv --file=intermediates_tss_flank ${tss_tar}
+        tar -xzv --file=intermediates_tes_flank ${tes_tar}
+        
         if(${remove_control_genes}){
             python3.10 scripts/executable_scripts/combine_all_annotations_ABC_polars.py \
                 --vcf ${sv_VCF} \
                 --genotypes ${genotype_VCF} \
                 --genes ${genes_list} \
                 --gene-sv ${sv_gene_pairs} \
-                --annotation_dir ${annotations_dir} \
+                --annotation_dir $(pwd) \
                 --outfile combined_dataset.tsv \
                 --expressions ${expression_file} \
                 --expression-field ${expression_field} \
@@ -72,7 +79,7 @@ task combine_annotations_ABC {
                 --genotypes ${genotype_VCF} \
                 --genes ${genes_list} \
                 --gene-sv ${sv_gene_pairs} \
-                --annotation_dir ${annotations_dir} \
+                --annotation_dir $(pwd) \
                 --outfile combined_dataset.tsv \
                 --expressions ${expression_file} \
                 --expression-field ${expression_field}
