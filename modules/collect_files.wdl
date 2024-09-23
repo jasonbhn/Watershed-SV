@@ -6,7 +6,7 @@ task collect_files {
     }
 
     output {
-        String all_files = "all_files.tar"
+        String all_files = "all_files.tar.gz"
     }
 
     runtime {
@@ -17,6 +17,6 @@ task collect_files {
     }
 
     command <<<
-        tar -cvz --file=all_files.tar ~{" " $files}
+        tar -cvz --file=all_files.tar.gz ~{" " $files}
     >>>
 }
