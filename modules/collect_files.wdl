@@ -3,11 +3,10 @@ version 1.0
 task collect_files {
     input {
         Array[File] files
-        String outdir
     }
 
     output {
-        String all_files = "$outdir"                
+        String all_files = "all_files.tar"
     }
 
     runtime {
@@ -18,7 +17,6 @@ task collect_files {
     }
 
     command <<<
-        mkdir -p $outdir
-        mv ~{" " $files} $outdir
+        tar -cvz --file=all_files.tar ~{" " $files}
     >>>
 }
