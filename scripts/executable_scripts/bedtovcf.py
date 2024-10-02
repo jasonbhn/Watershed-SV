@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from vcftobed import BED_DICT,BED,VCF
 import argparse
 

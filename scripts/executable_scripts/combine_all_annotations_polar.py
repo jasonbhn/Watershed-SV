@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from pysam import VariantFile
 import polars.selectors as cs
 from sv_utils import *

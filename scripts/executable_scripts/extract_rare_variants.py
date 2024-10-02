@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 new_path = '/oak/stanford/groups/smontgom/tannerj/UDN_LRS_watershed/Watershed-SV/scripts/executable_scripts'
 
