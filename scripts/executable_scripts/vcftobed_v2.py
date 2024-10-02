@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from pysam import VariantFile
 
 def extract_bed(vcf_path,bed_path):

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 parser = argparse.ArgumentParser(description='Process genomic intervals into single base start and end locations.')
 parser.add_argument('intervalBed', metavar='bed-interval', type=str,

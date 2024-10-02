@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 from pysam import VariantFile
 def preproc_paragraph(vcf,out_vcf):
