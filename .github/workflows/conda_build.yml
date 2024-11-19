@@ -12,8 +12,8 @@ on:
         default: '0'
 
 jobs:
-  build_package_linux-64:
-    name: Build conda package for linux-64
+  build_package:
+    name: Build conda package for noarch
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
