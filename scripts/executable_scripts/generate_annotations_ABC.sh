@@ -103,7 +103,7 @@ if [ "$pipeline" == "population" ]; then
   if [ ! -f "${outdir}/intermediates/pipeline_input.bed" ]; then
     if [ "$filter_ethnicity" == "True" ]; then
       if [ "$filter_rare" == "True" ]; then 
-        python3 scripts/executable_scripts/extract_rare_variants.py \
+        extract_rare_variants \
         --vcf $input_vcf \
         --lifted-coord $liftover_bed \
         --extract-genotype \
@@ -116,7 +116,7 @@ if [ "$pipeline" == "population" ]; then
         --out-maf ${outdir}/intermediates/pipeline_maf.tsv \
         --out-genotype ${outdir}/intermediates/pipeline_input_genotypes.tsv
       else 
-        python3 scripts/executable_scripts/extract_rare_variants.py \
+        extract_rare_variants \
         --vcf $input_vcf \
         --lifted-coord $liftover_bed \
         --extract-genotype \
@@ -130,7 +130,7 @@ if [ "$pipeline" == "population" ]; then
       fi
     else
       if [ "$filter_rare" == "True" ]; then 
-        python3 scripts/executable_scripts/extract_rare_variants.py \
+        extract_rare_variants \
         --vcf $input_vcf \
         --lifted-coord $liftover_bed \
         --extract-genotype \
@@ -141,7 +141,7 @@ if [ "$pipeline" == "population" ]; then
         --out-maf ${outdir}/intermediates/pipeline_maf.tsv \
         --out-genotype ${outdir}/intermediates/pipeline_input_genotypes.tsv
       else
-        python3 scripts/executable_scripts/extract_rare_variants.py \
+        extract_rare_variants \
         --vcf $input_vcf \
         --lifted-coord $liftover_bed \
         --extract-genotype \
@@ -155,7 +155,7 @@ if [ "$pipeline" == "population" ]; then
   fi
 elif [ "$pipeline" == "smallset" ]; then
   if [ ! -f "${outdir}/intermediates/pipeline_input.bed" ]; then
-  python3 scripts/executable_scripts/extract_rare_variants.py \
+  extract_rare_variants \
   --vcf $input_vcf \
   --extract-genotype \
   --genotype-filters ${filters} \
@@ -169,7 +169,7 @@ fi
 
 # gene annotations processing
 if [ ! -f "${outdir}/intermediates/genes.bed" ]; then
-python3 scripts/executable_scripts/extract_gene_exec.py \
+extract_gene_exec \
 --gencode-annotations $gencode_genes \
 --out-gene-bed ${outdir}/intermediates/genes.bed \
 --out-exon-bed ${outdir}/intermediates/exons.bed \
@@ -211,7 +211,7 @@ if [ ! -f "${outdir}/intermediates/exon_sv.${flank}.tsv" ]; then
 bedtools intersect -wo -a ${outdir}/intermediates/exons.bed -b ${outdir}/intermediates/gene_sv.${flank}.bed | 
 awk '$4==$14{OFS="\t";print $4,$12,$5,$6,$7,$8,$15}' | 
 sort -k1,1 -k2,2 -k3,3n > ${outdir}/intermediates/exon_sv.${flank}.unprocessed_info.tsv
-python3 scripts/executable_scripts/extract_SV_exon_info.py \
+extract_SV_exon_info \
 --input ${outdir}/intermediates/exon_sv.${flank}.unprocessed_info.tsv \
 --output ${outdir}/intermediates/exon_sv.${flank}.tsv
 fi
@@ -274,7 +274,7 @@ fi
 echo 'Done extracting gene sv ABC'
 # sv_to_gene_dist: this is zero for the gene body variants. and is trivialy incorporated for variants in noncoding flanks. 
 if [ ! -f "${outdir}/intermediates/SV_dist_to_gene.dist.${flank}.tsv" ]; then
-python3 scripts/executable_scripts/sv_to_gene_dist.py \
+sv_to_gene_dist \
 --flank ${flank} \
 --gene ${outdir}/intermediates/genes.bed \
 --gene-sv ${outdir}/intermediates/gene_sv_slop.${flank}.bed \
@@ -297,11 +297,11 @@ bedtools intersect -wa -wb -a ${outdir}/intermediates_tss_flank/gene_sv.${flank}
 bedtools intersect -wa -wb -a ${outdir}/intermediates_tes_flank/gene_sv.${flank}.bed -b ${outdir}/intermediates/cpgtmp.bed > ${outdir}/intermediates_tes_flank/cpg_by_genes_SV.dist.${flank}.bed
 
 # sv_to_gene_cpg_py: gene body
-python3 scripts/executable_scripts/sv_to_gene_cpg.py --gene-sv-cpg ${outdir}/intermediates/cpg_by_genes_SV.dist.${flank}.bed --out-gene-sv-cpg ${outdir}/intermediates/sv_to_gene_cpg.dist.${flank}.tsv
+sv_to_gene_cpg --gene-sv-cpg ${outdir}/intermediates/cpg_by_genes_SV.dist.${flank}.bed --out-gene-sv-cpg ${outdir}/intermediates/sv_to_gene_cpg.dist.${flank}.tsv
 # sv_to_gene_cpg_py: tss
-python3 scripts/executable_scripts/sv_to_gene_cpg.py --gene-sv-cpg ${outdir}/intermediates_tss_flank/cpg_by_genes_SV.dist.${flank}.bed --out-gene-sv-cpg ${outdir}/intermediates_tss_flank/sv_to_gene_cpg.dist.${flank}.tsv
+sv_to_gene_cpg --gene-sv-cpg ${outdir}/intermediates_tss_flank/cpg_by_genes_SV.dist.${flank}.bed --out-gene-sv-cpg ${outdir}/intermediates_tss_flank/sv_to_gene_cpg.dist.${flank}.tsv
 # sv_to_gene_cpg_py: tes
-python3 scripts/executable_scripts/sv_to_gene_cpg.py --gene-sv-cpg ${outdir}/intermediates_tes_flank/cpg_by_genes_SV.dist.${flank}.bed --out-gene-sv-cpg ${outdir}/intermediates_tes_flank/sv_to_gene_cpg.dist.${flank}.tsv
+sv_to_gene_cpg --gene-sv-cpg ${outdir}/intermediates_tes_flank/cpg_by_genes_SV.dist.${flank}.bed --out-gene-sv-cpg ${outdir}/intermediates_tes_flank/sv_to_gene_cpg.dist.${flank}.tsv
 fi
 echo 'Done extracting gene sv cpg'
 
@@ -310,7 +310,7 @@ echo 'Done extracting gene sv cpg'
 if [ ! -f "${outdir}/intermediates/GC_by_genes_SV.dist.${flank}.tsv" ]; then
 gc=input/gc5Base.bw
 # gene body
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates/gene_sv.${flank}.bed \
 --in-bigwig ${gc} \
 --bigwig-name "mean_GC_content" \
@@ -319,7 +319,7 @@ python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
 --score-lower-limit 0 \
 --out-gene-sv-score ${outdir}/intermediates/GC_by_genes_SV.dist.${flank}.tsv
 # tss flank
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates_tss_flank/gene_sv.${flank}.bed \
 --in-bigwig ${gc} \
 --bigwig-name "mean_GC_content" \
@@ -328,7 +328,7 @@ python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
 --score-lower-limit 0 \
 --out-gene-sv-score ${outdir}/intermediates_tss_flank/GC_by_genes_SV.dist.${flank}.tsv
 # tes flank
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates_tes_flank/gene_sv.${flank}.bed \
 --in-bigwig ${gc} \
 --bigwig-name "mean_GC_content" \
@@ -343,7 +343,7 @@ echo 'Done extracting gene sv gc'
 if [ ! -f "${outdir}/intermediates/LINSIGHT_by_genes_SV.dist.${flank}.tsv" ]; then
 linsight_file=input/LINSIGHT_hg38.bw
 # gene body
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates/gene_sv.${flank}.bed \
 --in-bigwig ${linsight_file} \
 --bigwig-name "top10_LINSIGHT" \
@@ -352,7 +352,7 @@ python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
 --score-lower-limit 0 \
 --out-gene-sv-score ${outdir}/intermediates/LINSIGHT_by_genes_SV.dist.${flank}.tsv
 # tss
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates_tss_flank/gene_sv.${flank}.bed \
 --in-bigwig ${linsight_file} \
 --bigwig-name "top10_LINSIGHT" \
@@ -361,7 +361,7 @@ python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
 --score-lower-limit 0 \
 --out-gene-sv-score ${outdir}/intermediates_tss_flank/LINSIGHT_by_genes_SV.dist.${flank}.tsv
 # tes
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates_tes_flank/gene_sv.${flank}.bed \
 --in-bigwig ${linsight_file} \
 --bigwig-name "top10_LINSIGHT" \
@@ -376,7 +376,7 @@ echo 'Done extracting gene sv linsight'
 if [ ! -f "${outdir}/intermediates/PhastCON20_by_genes_SV.dist.${flank}.tsv" ]; then
 phcon20_file=input/hg38.phastCons20way.bw
 # gene body
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates/gene_sv.${flank}.bed \
 --in-bigwig ${phcon20_file} \
 --bigwig-name "top10_phastCON" \
@@ -385,7 +385,7 @@ python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
 --score-lower-limit 0 \
 --out-gene-sv-score ${outdir}/intermediates/PhastCON20_by_genes_SV.dist.${flank}.tsv
 # tss
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates_tss_flank/gene_sv.${flank}.bed \
 --in-bigwig ${phcon20_file} \
 --bigwig-name "top10_phastCON" \
@@ -394,7 +394,7 @@ python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
 --score-lower-limit 0 \
 --out-gene-sv-score ${outdir}/intermediates_tss_flank/PhastCON20_by_genes_SV.dist.${flank}.tsv
 # tes
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates_tes_flank/gene_sv.${flank}.bed \
 --in-bigwig ${phcon20_file} \
 --bigwig-name "top10_phastCON" \
@@ -409,7 +409,7 @@ echo 'Done extracting gene sv phastcon'
 if [ ! -f "${outdir}/intermediates/CADD_by_genes_SV.dist.${flank}.tsv" ]; then
 cadd_file=input/CADD_GRCh38-v1.6.bw # use mean top 10
 # gene body
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates/gene_sv.${flank}.bed \
 --in-bigwig ${cadd_file} \
 --bigwig-name "top10_CADD" \
@@ -418,7 +418,7 @@ python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
 --score-lower-limit 0 \
 --out-gene-sv-score ${outdir}/intermediates/CADD_by_genes_SV.dist.${flank}.tsv
 # tss
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates_tss_flank/gene_sv.${flank}.bed \
 --in-bigwig ${cadd_file} \
 --bigwig-name "top10_CADD" \
@@ -427,7 +427,7 @@ python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
 --score-lower-limit 0 \
 --out-gene-sv-score ${outdir}/intermediates_tss_flank/CADD_by_genes_SV.dist.${flank}.tsv
 # tes
-python3 scripts/executable_scripts/sv_to_gene_bw_scores.py \
+sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates_tes_flank/gene_sv.${flank}.bed \
 --in-bigwig ${cadd_file} \
 --bigwig-name "top10_CADD" \
@@ -442,7 +442,7 @@ echo 'Done extracting gene sv CADD'
 # sv_to_gene_TADs:
 if [ ! -f "${outdir}/intermediates/TAD_boundary_by_genes_SV.dist.${flank}.tsv" ]; then
 TADs_dir=input/TAD # hg38 from starting annotations
-bash scripts/executable_scripts/clean_TADs.sh ${TADs_dir} ${outdir}/intermediates/TAD_cleaned
+clean_TADs ${TADs_dir} ${outdir}/intermediates/TAD_cleaned
 # gene body 
 bedtools slop -i ${outdir}/intermediates/gene_sv.${flank}.bed -g ${genome_bound_file} -b 5000 > ${outdir}/intermediates/TAD_5000_flank_gene_SV.bed
 bedtools intersect -wa -wb -a ${outdir}/intermediates/TAD_5000_flank_gene_SV.bed -b ${outdir}/intermediates/TAD_cleaned/*  -filenames | 
@@ -467,7 +467,7 @@ fi
 enhancers=input/matrix_hs.csv
 primary_cells=input/hs_primary.txt
 if [ ! -f "${outdir}/intermediates/enhancers_by_genes_SV.dist.${flank}.tsv" ]; then
-python3 scripts/executable_scripts/merge_enhancers.py \
+merge_enhancers \
 --enhancers ${enhancers} \
 --primary-cell-list ${primary_cells} \
 --out-merged-enhancers ${outdir}/intermediates/primary_cells_collpased_enhancers.bed
@@ -498,38 +498,38 @@ echo 'Done extracting gene sv enhancer'
 # process_roadmaps:
 if [ ! -f "${outdir}/intermediates/combined_roadmaps.dist.${flank}.tsv" ]; then
 roadmap_dir=input/roadmap_all_gtex
-scripts/executable_scripts/split_bed_by_stateno.sh ${roadmap_dir} ${outdir}/intermediates/processed_roadmaps
+split_bed_by_stateno ${roadmap_dir} ${outdir}/intermediates/processed_roadmaps
 # sv_to_gene_roadmaps
 for i in {1..25}
 do
-scripts/executable_scripts/sv_to_gene_roadmap.sh ${outdir}/intermediates/gene_sv.${flank}.bed ${outdir}/intermediates/processed_roadmaps ${outdir}/intermediates/roadmap_multitissue_sv_to_gene.${i}.tsv ${i}
-scripts/executable_scripts/sv_to_gene_roadmap.sh ${outdir}/intermediates_tss_flank/gene_sv.${flank}.bed ${outdir}/intermediates/processed_roadmaps ${outdir}/intermediates_tss_flank/roadmap_multitissue_sv_to_gene.${i}.tsv ${i}
-scripts/executable_scripts/sv_to_gene_roadmap.sh ${outdir}/intermediates_tes_flank/gene_sv.${flank}.bed ${outdir}/intermediates/processed_roadmaps ${outdir}/intermediates_tes_flank/roadmap_multitissue_sv_to_gene.${i}.tsv ${i}
+sv_to_gene_roadmap ${outdir}/intermediates/gene_sv.${flank}.bed ${outdir}/intermediates/processed_roadmaps ${outdir}/intermediates/roadmap_multitissue_sv_to_gene.${i}.tsv ${i}
+sv_to_gene_roadmap ${outdir}/intermediates_tss_flank/gene_sv.${flank}.bed ${outdir}/intermediates/processed_roadmaps ${outdir}/intermediates_tss_flank/roadmap_multitissue_sv_to_gene.${i}.tsv ${i}
+sv_to_gene_roadmap ${outdir}/intermediates_tes_flank/gene_sv.${flank}.bed ${outdir}/intermediates/processed_roadmaps ${outdir}/intermediates_tes_flank/roadmap_multitissue_sv_to_gene.${i}.tsv ${i}
 
 done
 
 # combine_sv_to_gene_roadmaps:
 # gene body
-python3 scripts/executable_scripts/combine_roadmaps.py \
+combine_roadmaps \
 --gene-sv-roadmap-dir ${outdir}/intermediates \
 --out-combined-roadmap ${outdir}/intermediates/combined_roadmaps.dist.${flank}.tsv
 # tss
-python3 scripts/executable_scripts/combine_roadmaps.py \
+combine_roadmaps \
 --gene-sv-roadmap-dir ${outdir}/intermediates_tss_flank \
 --out-combined-roadmap ${outdir}/intermediates_tss_flank/combined_roadmaps.dist.${flank}.tsv
 # tes
-python3 scripts/executable_scripts/combine_roadmaps.py \
+combine_roadmaps \
 --gene-sv-roadmap-dir ${outdir}/intermediates_tes_flank \
 --out-combined-roadmap ${outdir}/intermediates_tes_flank/combined_roadmaps.dist.${flank}.tsv
 fi
 echo 'Done extracting gene sv roadmaps'
 
 # vep annotations
-python3 scripts/executable_scripts/prep_vep_input.py \
+prep_vep_input \
 ${outdir}/intermediates/gene_sv_slop.${flank}.bed \
 ${outdir}/intermediates/vep_input.${flank}.bed
 
-bash scripts/executable_scripts/run_extract_sv_vep_annotations.sh /home/bni1/vep.sif \
+run_extract_sv_vep_annotations /home/bni1/vep.sif \
 ${outdir}/intermediates/vep_input.${flank}.bed \
 ${vep_cache_dir} \
 ${outdir}/intermediates/tmp.tsv \

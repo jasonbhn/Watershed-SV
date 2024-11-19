@@ -21,4 +21,4 @@ sort -k1,1 -k2,2n ${vep_in} | vep \
 --overlaps \
 --distance 10000
 
-python3 scripts/executable_scripts/extract_sv_vep_annotations.py ${tmp} ${vep_out}
+extract_sv_vep_annotations ${tmp} ${vep_out}
