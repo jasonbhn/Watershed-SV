@@ -46,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           load: true
-          file: .github/dockerfiles/pixi_mamba.df
+          file: .github/dockerfiles/pixi_boa.df
           tags: conda_mambabuild:latest
 
       - name: Build conda packages
