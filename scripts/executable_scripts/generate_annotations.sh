@@ -77,7 +77,7 @@ do
       shift 2
       ;;
     -h | --help )
-      "Extract genomic annotations for SVs v1"
+      echo "Extract genomic annotations for SVs v1"
       exit 2
       ;;
     -- )
