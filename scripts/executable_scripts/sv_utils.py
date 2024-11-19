@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import mygene
 import pysam
 from pysam import VariantFile
 import glob

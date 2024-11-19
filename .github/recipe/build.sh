@@ -6,49 +6,44 @@ mkdir -p ${PREFIX}/libexec/${PKG_NAME}
 
 install_script() {
     script_name=$1
-    cp ${SRC_DIR}/scripts/executable_scripts/${script_name}.py ${PREFIX}/libexec/${PKG_NAME}
+    cp ${SRC_DIR}/scripts/executable_scripts/${script_name} ${PREFIX}/libexec/${PKG_NAME}
 
 tee ${PREFIX}/bin/${script_name} << EOF
     #!/usr/bin/env bash
 
-    exec ${PREFIX}/libexec/${PKG_NAME}/${script_name}.py "\$@"
+    exec ${PREFIX}/libexec/${PKG_NAME}/${script_name} "\$@"
 EOF
 }
 
 export -f install_script
 
-script_names=(
-    #bedtovcf  missing vcftobed - is it supposed to be vcftobed_v2?
-    collapse_annotation
-    combine_all_annotations
-    combine_all_annotations_ABC_polars
-    combine_all_annotations_polar
-    combine_raw_annotations
-    combine_roadmaps
-    convert_vcf_to_paragraph_input
-    enrichment_by_rare_SV
-    eval_watershed_prep
-    #extract_SV_annotations  missing some arguments
-    extract_SV_exon_info
-    extract_gene_exec
-    extract_rare_variants
-    filterByCaller
-    filter_combined_cmg
-    filter_splice_clusters
-    interval_to_pair
-    leafcutter_cluster_regtools
-    merge_enhancers
-    #outlier_calling_exec  has typo on line 12 - parser.add_arl
-    regress_out_PC
-    regress_out_PC_no_age
-    relevant_gene_enrichment_for_outliers
-    sv_to_gene_bw_scores
-    sv_to_gene_cpg
-    sv_to_gene_dist
-    train_test_predict_split_annotation
-    #vcftobed_v2  missing import argparse
+python_script_names=(
+    combine_all_annotations_ABC_polars.py
+    combine_all_annotations_polar.py
+    combine_roadmaps.py
+    eval_watershed_prep.py
+    extract_SV_exon_info.py
+    extract_gene_exec.py
+    extract_rare_variants.py
+    extract_sv_vep_annotations.py
+    merge_enhancers.py
+    prep_vep_input.py
+    sv_to_gene_bw_scores.py
+    sv_to_gene_cpg.py
+    sv_to_gene_dist.py
+    train_test_predict_split_annotation.py
 )
 
-echo ${script_names[@]} | tr ' ' '\n' | xargs -I % bash -c 'install_script %'
+shell_script_names=(
+    clean_TADS.sh
+    extract_sv_vep_annotations.sh
+    generate_annotations.sh
+    generate_annotations_ABC.sh
+    split_bed_by_stateno.sh
+    sv_to_gene_roadmap.sh
+)
+
+echo ${python_script_names[@]} | tr ' ' '\n' | xargs -I % bash -c 'install_script %'
+echo ${shell_script_names[@]} | tr ' ' '\n' | xargs -I % bash -c 'install_script %'
 
 cp ${SRC_DIR}/scripts/executable_scripts/sv_utils.py ${PREFIX}/libexec/${PKG_NAME}

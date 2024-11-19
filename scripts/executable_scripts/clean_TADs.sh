@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -o nounset -o pipefail -o errexit
 
 inputDir=$1
 outputDir=$2
