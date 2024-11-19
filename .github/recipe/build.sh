@@ -39,7 +39,7 @@ python_script_names=(
 )
 
 shell_script_names=(
-    clean_TADS.sh
+    clean_TADs.sh
     extract_sv_vep_annotations.sh
     generate_annotations.sh
     generate_annotations_ABC.sh
