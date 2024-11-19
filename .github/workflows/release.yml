@@ -30,6 +30,7 @@ jobs:
           else
             echo "commit=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           fi
+          echo "${{ github.events.input.tag }}"
 
       - name: Create new tag
         id: tag_version
