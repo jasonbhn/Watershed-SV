@@ -39,10 +39,10 @@ python_script_names=(
 )
 
 shell_script_names=(
-    clean_TADS.sh
-    extract_sv_vep_annotations.sh
+    clean_TADs.sh
     generate_annotations.sh
     generate_annotations_ABC.sh
+    run_extract_sv_vep_annotations.sh
     split_bed_by_stateno.sh
     sv_to_gene_roadmap.sh
 )

@@ -7,5 +7,6 @@ ENV PATH="/root/.pixi/bin:${PATH}"
 RUN conda config --append channels conda-forge
 RUN conda config --append channels bioconda
 RUN conda config --append channels nodefaults
+RUN conda config --remove channels defaults
 COPY .github/custom_channels /tmp/custom_channels
 RUN xargs -I % conda config --prepend channels % < /tmp/custom_channels
