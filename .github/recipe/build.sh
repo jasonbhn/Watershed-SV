@@ -31,7 +31,6 @@ python_script_names=(
     extract_rare_variants.py
     extract_sv_vep_annotations.py
     merge_enhancers.py
-    prep_vep_input.py
     sv_to_gene_bw_scores.py
     sv_to_gene_cpg.py
     sv_to_gene_dist.py
@@ -51,3 +50,4 @@ echo ${python_script_names[@]} | tr ' ' '\n' | xargs -I % bash -c 'install_scrip
 echo ${shell_script_names[@]} | tr ' ' '\n' | xargs -I % bash -c 'install_script %'
 
 cp ${SRC_DIR}/scripts/executable_scripts/sv_utils.py ${PREFIX}/libexec/${PKG_NAME}
+cp ${SRC_DIR}/scripts/executable_scripts/prep_vep_input.py ${PREFIX}/libexec/${PKG_NAME}
