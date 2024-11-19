@@ -7,8 +7,6 @@ mkdir -p ${PREFIX}/libexec/${PKG_NAME}
 install_script() {
     script_name=$1
     cp ${SRC_DIR}/scripts/executable_scripts/${script_name}.py ${PREFIX}/libexec/${PKG_NAME}
-    chmod +x ${PREFIX}/libexec/${PKG_NAME}/${script_name}.py 
-    sed -i '1i #!/usr/bin/env python3' ${PREFIX}/libexec/${PKG_NAME}/${script_name}.py
 
 tee ${PREFIX}/bin/${script_name} << EOF
     #!/usr/bin/env bash
