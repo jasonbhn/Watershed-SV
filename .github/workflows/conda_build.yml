@@ -46,13 +46,15 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           load: true
-          file: .github/pixi_mamba.df
+          file: .github/dockerfiles/pixi_mamba.df
           tags: conda_mambabuild:latest
 
       - name: Build conda packages
         run: docker run --rm --volume /tmp:/tmp --volume $(pwd) --workdir $(pwd) conda_mambabuild conda mambabuild --output-folder /tmp/conda-bld /tmp/recipe
 
-      - name: Upload packages
+      - name: Setup pixi
         uses: prefix-dev/setup-pixi@master
+
+      - name: Upload packages
         shell: pixi exec --spec anaconda-client -- bash -e {0}
         run: anaconda upload --force /tmp/conda-bld/noarch/*.tar.bz2
