@@ -48,7 +48,7 @@ jobs:
       - name: Build and push docker containers
         uses: docker/build-push-action@v4
         with:
-	  build-args: VERSION=${{ github.events.input.version }}
+          build-args: VERSION=${{ github.events.input.version }}
           file: .github/dockerfiles/pixi_watershed.df
           push: true
           tags: |
