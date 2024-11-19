@@ -4,6 +4,7 @@ SHELL ["/bin/bash", "-c"]
 RUN pixi global install conda
 RUN pixi global install --environment conda boa
 ENV PATH="/root/.pixi/bin:${PATH}"
+RUN conda config --append channels conda-forge
 RUN conda config --append channels bioconda
 RUN conda config --append channels nodefaults
 COPY .github/custom_channels /tmp/custom_channels
