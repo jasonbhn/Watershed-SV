@@ -53,7 +53,7 @@ jobs:
         run: docker run --rm --volume /tmp:/tmp --volume $(pwd) --workdir $(pwd) conda_mambabuild conda mambabuild --output-folder /tmp/conda-bld /tmp/recipe
 
       - name: Setup pixi
-        uses: prefix-dev/setup-pixi@master
+        uses: prefix-dev/setup-pixi@main
 
       - name: Upload packages
         shell: pixi exec --spec anaconda-client -- bash -e {0}
