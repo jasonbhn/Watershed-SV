@@ -26,11 +26,10 @@ jobs:
         id: determine-commit
         run: |
           if [[ ${INPUT_COMMIT} != '' ]]; then
-            echo "commit=${{ github.events.input.commit }}" >> "$GITHUB_OUTPUT"
+            echo "commit=${{ github.event.input.commit }}" >> "$GITHUB_OUTPUT"
           else
             echo "commit=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           fi
-          echo "${{ github.events.input.tag }}"
 
       - name: Create new tag
         id: tag_version
@@ -39,7 +38,7 @@ jobs:
           default_bump: false
           default_prerelease_bump: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: ${{ github.events.input.tag }}
+          custom_tag: ${{ github.event.input.tag }}
           commit_sha: ${{ needs.determine-commit.outputs.commit }}
           tag_prefix: ""
 
