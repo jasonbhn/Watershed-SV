@@ -1,3 +1,4 @@
+ARG VERSION
 FROM ghcr.io/prefix-dev/pixi:latest
 RUN pixi global install -c dnachun \
     -c conda-forge \
