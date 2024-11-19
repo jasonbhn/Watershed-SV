@@ -4,3 +4,4 @@ RUN pixi global install -c dnachun \
     -c conda-forge \
     -c bioconda \
     watershed-sv=${VERSION}
+ENV PATH=/root/.pixi/bin:${PATH}
