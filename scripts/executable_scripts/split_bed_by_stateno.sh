@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usrbin/env bash
+
+set -o nounset -o pipefail -o errexit
+
 indir=$1
 outdir=$2
 if [ ! -d "$2" ] 
