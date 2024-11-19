@@ -1,0 +1,80 @@
+{% set name = "watershed-sv" %}
+{% set version = "VERSION_PLACEHOLDER" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jasonbhn/Watershed-SV/archive/VERSION_PLACEHOLDER.tar.gz
+  sha256: SHA256SUM_PLACEHOLDER
+
+build:
+  noarch: python
+  number: BUILD_PLACEHOLDER
+
+requirements:
+  build:
+    - sed
+  run:
+    - bx-python
+    - dask
+    - gseapy >=1.1
+    - lxml
+    - matplotlib-base
+    - mygene
+    - numpy >1.24
+    - pandarallel
+    - pandas
+    - pca
+    - python >3.9
+    - pysam
+    - polars
+    - pyarrow
+    - pybigwig
+    - pyhpo
+    - pyranges
+    - scikit-learn
+    - scipy
+    - seaborn
+    - statsmodels
+
+test:
+  commands:
+    #- bedtovcf -h
+    - collapse_annotation -h
+    - combine_all_annotations -h
+    - combine_all_annotations_ABC_polars -h
+    - combine_all_annotations_polar -h
+    - combine_raw_annotations -h
+    - combine_roadmaps -h
+    - convert_vcf_to_paragraph_input -h
+    - enrichment_by_rare_SV -h
+    - eval_watershed_prep -h
+    #- extract_SV_annotations -h
+    - extract_SV_exon_info -h
+    - extract_gene_exec -h
+    - extract_rare_variants -h
+    - filterByCaller -h
+    - filter_combined_cmg -h
+    - filter_splice_clusters -h
+    - interval_to_pair -h
+    - leafcutter_cluster_regtools -h
+    - merge_enhancers -h
+    #- outlier_calling_exec -h
+    - regress_out_PC -h
+    - regress_out_PC_no_age -h
+    - relevant_gene_enrichment_for_outliers -h
+    - sv_to_gene_bw_scores -h
+    - sv_to_gene_cpg -h
+    - sv_to_gene_dist -h
+    - train_test_predict_split_annotation -h
+    #- vcfobed_v2 -h
+
+about:
+  home: https://github.com/jasonbhn/Watershed-SV
+  summary: Watershed-SV extends Watershed to model the impact of rare SVs
+
+extra:
+  recipe-maintainers:
+    - danielnachun

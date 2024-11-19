@@ -1,0 +1,10 @@
+FROM ghcr.io/prefix-dev/pixi:latest
+
+SHELL ["/bin/bash", "-c"]
+RUN pixi global install conda
+RUN pixi global install --environment conda boa
+ENV PATH="${HOME}/.pixi/bin:${PATH}"
+RUN conda config --append channels bioconda
+RUN conda config --append channels nodefaults
+COPY .github/custom_channels /tmp/custom_channels
+RUN xargs -I % conda config --prepend channels % < /tmp/custom_channels
