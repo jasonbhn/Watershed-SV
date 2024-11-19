@@ -34,7 +34,7 @@ jobs:
           version=${{ github.event.inputs.version }}
           build=${{ github.event.inputs.build }}
           wget https://github.com/jasonbhn/Watershed-SV/archive/${version}.tar.gz
-          sha256sum=$(sha256sum ${commit}.tar.gz | cut -d ' ' -f 1)
+          sha256sum=$(sha256sum ${version}.tar.gz | cut -d ' ' -f 1)
           sed -i "s/VERSION_PLACEHOLDER/${version}/g" /tmp/recipe/meta.yaml
           sed -i "s/SHA256SUM_PLACEHOLDER/${sha256sum}/g" /tmp/recipe/meta.yaml
           sed -i "s/BUILD_PLACEHOLDER/${build}/g" /tmp/recipe/meta.yaml
