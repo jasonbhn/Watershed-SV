@@ -79,7 +79,7 @@ do
       ;;
     -h | --help )
       echo "Extract genomic annotations for SVs v1"
-      exit 2
+      exit 0
       ;;
     -- )
       shift;
@@ -87,6 +87,7 @@ do
       ;;
     * )
       echo "Unexpected option: $1"
+      exit 1
       ;;
   esac
 done
