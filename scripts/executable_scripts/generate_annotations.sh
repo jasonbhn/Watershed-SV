@@ -350,7 +350,7 @@ python3 scripts/executable_scripts/prep_vep_input.py \
 ${outdir}/intermediates/gene_sv.${flank}.bed \
 ${outdir}/intermediates/vep_input.${flank}.bed
 
-bash scripts/executable_scripts/extract_sv_vep_annotations.sh \
+bash scripts/executable_scripts/run_extract_sv_vep_annotations.sh \
 ${outdir}/intermediates/vep_input.${flank}.bed \
 ${vep_cache_dir} \
 ${outdir}/intermediates/tmp.tsv \
