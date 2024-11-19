@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from pysam import VariantFile
 from sv_utils import *
 import pandas as pd
