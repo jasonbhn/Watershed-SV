@@ -76,15 +76,15 @@ do
       filter_rare="$2"
       shift 2
       ;;
-    -h | --help)
+    -h | --help )
       "Extract genomic annotations for SVs v1"
       exit 2
       ;;
-    --)
+    -- )
       shift;
       break
       ;;
-    *)
+    * )
       echo "Unexpected option: $1"
       ;;
   esac
