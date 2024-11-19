@@ -15,7 +15,7 @@ tee ${PREFIX}/bin/${script_name} << EOF
 EOF
 }
 
-export -f install_python_script
+export -f install_script
 
 python_script_names=(
     combine_all_annotations_ABC_polars.py
