@@ -2,13 +2,17 @@
 
 set -o xtrace -o nounset -o pipefail -o errexit
 
+mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/libexec/${PKG_NAME}
 
 install_script() {
     script_name=$1
     cp ${SRC_DIR}/scripts/executable_scripts/${script_name} ${PREFIX}/libexec/${PKG_NAME}
 
-tee ${PREFIX}/bin/${script_name} << EOF
+    wrapper_name=${script_name//.py/}
+    wrapper_name=${wrapper_name//.sh/}
+
+tee ${PREFIX}/bin/${wrapper_name} << EOF
     #!/usr/bin/env bash
 
     exec ${PREFIX}/libexec/${PKG_NAME}/${script_name} "\$@"
