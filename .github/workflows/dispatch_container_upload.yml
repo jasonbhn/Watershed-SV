@@ -49,7 +49,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
 	  build-args: VERSION=${{ github.events.input.version }}
-          file: .github/pixi_watershed.df
+          file: .github/dockerfiles/pixi_watershed.df
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/watershed-sv:${{ github.events.input.version }}
