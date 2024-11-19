@@ -1,5 +1,5 @@
-ARG VERSION
 FROM ghcr.io/prefix-dev/pixi:latest
+ARG VERSION
 RUN pixi global install -c dnachun \
     -c conda-forge \
     -c bioconda \
