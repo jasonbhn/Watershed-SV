@@ -31,6 +31,7 @@ python_script_names=(
     sv_to_gene_bw_scores.py
     sv_to_gene_cpg.py
     sv_to_gene_dist.py
+    sv_utils.py
     train_test_predict_split_annotation.py
 )
 
@@ -45,5 +46,3 @@ shell_script_names=(
 
 echo ${python_script_names[@]} | tr ' ' '\n' | xargs -I % bash -c 'install_script %'
 echo ${shell_script_names[@]} | tr ' ' '\n' | xargs -I % bash -c 'install_script %'
-
-cp ${SRC_DIR}/scripts/executable_scripts/sv_utils.py ${PREFIX}/libexec/${PKG_NAME}
