@@ -2,17 +2,14 @@
 
 set -o xtrace -o nounset -o pipefail -o errexit
 
+mkdir -p ${SP_DIR}
 mkdir -p ${PREFIX}/bin
-mkdir -p ${PREFIX}/libexec/${PKG_NAME}
 
 install_script() {
     script_name=$1
-    cp ${SRC_DIR}/scripts/executable_scripts/${script_name} ${PREFIX}/libexec/${PKG_NAME}
-
     wrapper_name=${script_name//.py/}
     wrapper_name=${wrapper_name//.sh/}
-
-    ln -sf ${PREFIX}/libexec/${PKG_NAME}/${script_name} ${PREFIX}/bin/${wrapper_name}
+    cp ${SRC_DIR}/scripts/executable_scripts/${script_name} ${PREFIX}/bin/${wrapper_name}
 }
 
 export -f install_script
@@ -31,7 +28,6 @@ python_script_names=(
     sv_to_gene_bw_scores.py
     sv_to_gene_cpg.py
     sv_to_gene_dist.py
-    sv_utils.py
     train_test_predict_split_annotation.py
 )
 
@@ -46,3 +42,5 @@ shell_script_names=(
 
 echo ${python_script_names[@]} | tr ' ' '\n' | xargs -I % bash -c 'install_script %'
 echo ${shell_script_names[@]} | tr ' ' '\n' | xargs -I % bash -c 'install_script %'
+
+cp ${SRC_DIR}/scripts/executable_scripts/sv_utils.py ${SP_DIR}
