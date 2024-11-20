@@ -3,5 +3,5 @@ ARG VERSION
 RUN pixi global install -c dnachun \
     -c conda-forge \
     -c bioconda \
-    watershed-sv=${VERSION}
+    watershed-sv=${VERSION} ensembl-vep
 ENV PATH=/root/.pixi/bin:${PATH}
