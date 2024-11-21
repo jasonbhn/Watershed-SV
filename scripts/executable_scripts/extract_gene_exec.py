@@ -48,7 +48,7 @@ if __name__ == '__main__':
     exon_pl=pl.from_pandas(exons)
     exon_pl=exon_pl.with_columns([(pl.col('End')-pl.col('Bed_start')).alias('exon_length'),pl.col('exon_number').count().over('gene_id').alias('num_exons')])
     exon_pl=exon_pl.with_columns(pl.col('exon_length').sum().over('gene_id').alias('total_coding_length'))
-    exon_pl.write_csv(out_exon_bed,has_header=False,separator='\t')
+    exon_pl.write_csv(out_exon_bed,include_header=False,separator='\t')
     # tss tes
     genes['tss_start'] = genes.apply(lambda x: x.Bed_start if (x.Strand=='+') else x.End-1,axis=1)
     genes['tss_end'] = genes.apply(lambda x: x.Bed_start+1 if (x.Strand=='+') else x.End,axis=1)
