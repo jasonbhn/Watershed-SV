@@ -51,6 +51,7 @@ if __name__ == '__main__':
     infer_rareness = args.infer_rareness
     filter_ethnicity = args.filter_ethnicity
     metadata_path = args.metadata
+    print('hererererere!')
     # extract genotypes into a file. 
     if lifted_coord == "None":
         print('hg38 files are provided, if not, please provide lifted bed file in hg38')
