@@ -45,13 +45,13 @@ jobs:
            username: ${{ vars.DOCKERIO_USERNAME }}
            password: ${{ secrets.DOCKERIO_TOKEN }}
 
-      - name: Build and push docker containers
-        uses: docker/build-push-action@v4
-        with:
-          build-args: VERSION=${{ github.event.inputs.version }}
-          file: .github/dockerfiles/pixi_watershed.df
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/watershed-sv:${{ github.event.inputs.version }}
-            quay.io/${{ vars.QUAYIO_USERNAME }}/watershed-sv:${{ github.event.inputs.version }}
-            docker.io/${{ vars.DOCKERIO_USERNAME }}/watershed-sv:${{ github.event.inputs.version }}
+       - name: Build and push docker containers
+         uses: docker/build-push-action@v4
+         with:
+           build-args: VERSION=${{ github.event.inputs.version }}
+           file: .github/dockerfiles/pixi_watershed.df
+           push: true
+           tags: |
+             ghcr.io/${{ github.repository_owner }}/watershed-sv:${{ github.event.inputs.version }}
+             quay.io/${{ vars.QUAYIO_USERNAME }}/watershed-sv:${{ github.event.inputs.version }}
+             docker.io/${{ vars.DOCKERIO_USERNAME }}/watershed-sv:${{ github.event.inputs.version }}
