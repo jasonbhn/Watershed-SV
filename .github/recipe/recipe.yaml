@@ -14,6 +14,17 @@ build:
   noarch: python
 
 requirements:
+  build:
+    - bedtools
+    - numpy >1.24
+    - pandas
+    - python >3.9
+    - pyarrow
+    - pysam
+    - polars
+    - pybigwig
+    - pyranges
+    - scipy
   run:
     - bedtools
     - numpy >1.24
