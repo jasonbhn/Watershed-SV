@@ -3,7 +3,7 @@ package:
   version: VERSION_PLACEHOLDER
 
 source:
-  url: https://github.com/jasonbhn/Watershed-SV/archive/{{ version }}.tar.gz
+  url: https://github.com/jasonbhn/Watershed-SV/archive/${{ version }}.tar.gz
   sha256: SHA256SUM_PLACEHOLDER
 
 build:
