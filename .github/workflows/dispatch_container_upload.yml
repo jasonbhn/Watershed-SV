@@ -53,5 +53,8 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/watershed-sv:${{ github.event.inputs.version }}
+            ghcr.io/${{ github.repository_owner }}/watershed-sv:latest
             quay.io/${{ vars.QUAYIO_USERNAME }}/watershed-sv:${{ github.event.inputs.version }}
+            quay.io/${{ vars.QUAYIO_USERNAME }}/watershed-sv:latest
             docker.io/${{ vars.DOCKERIO_USERNAME }}/watershed-sv:${{ github.event.inputs.version }}
+            docker.io/${{ vars.DOCKERIO_USERNAME }}/watershed-sv:latest

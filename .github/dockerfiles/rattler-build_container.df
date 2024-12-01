@@ -1,0 +1,5 @@
+FROM ghcr.io/prefix-dev/pixi:latest
+
+SHELL ["/bin/bash", "-c"]
+RUN pixi global install rattler-build git patch
+ENV PATH=/root/.pixi/bin:${PATH}

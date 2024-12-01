@@ -1,17 +1,14 @@
-{% set name = "watershed-sv" %}
-{% set version = "VERSION_PLACEHOLDER" %}
-
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: watershed-sv
+  version: VERSION_PLACEHOLDER
 
 source:
-  url: https://github.com/jasonbhn/Watershed-SV/archive/VERSION_PLACEHOLDER.tar.gz
+  url: https://github.com/jasonbhn/Watershed-SV/archive/{{ version }}.tar.gz
   sha256: SHA256SUM_PLACEHOLDER
 
 build:
-  noarch: python
   number: BUILD_PLACEHOLDER
+  noarch: python
 
 requirements:
   run:
@@ -26,8 +23,8 @@ requirements:
     - pyranges
     - scipy
 
-test:
-  commands:
+tests:
+  - script:
     - combine_all_annotations_ABC_polars -h
     - combine_all_annotations_polar -h
     - combine_roadmaps -h
@@ -44,9 +41,10 @@ test:
     - train_test_predict_split_annotation -h
 
 about:
-  home: https://github.com/jasonbhn/Watershed-SV
   summary: Watershed-SV extends Watershed to model the impact of rare SVs
+  homepage: https://github.com/jasonbhn/Watershed-SV
 
 extra:
   recipe-maintainers:
     - danielnachun
+
