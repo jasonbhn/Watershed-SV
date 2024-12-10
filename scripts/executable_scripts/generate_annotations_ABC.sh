@@ -120,6 +120,7 @@ if [ "$pipeline" == "population" ]; then
         --vcf $input_vcf \
         --lifted-coord $liftover_bed \
         --extract-genotype \
+        --no-infer-rareness \
         --filter-ethnicity \
         --metadata $metadata \
         --genotype-filters $filters \
@@ -135,6 +136,7 @@ if [ "$pipeline" == "population" ]; then
         --lifted-coord $liftover_bed \
         --extract-genotype \
         --infer-rareness \
+        --no-filter-ethnicity \
         --genotype-filters $filters \
         --out-annotsv ${outdir}/intermediates/vep_input.tsv \
         --out-generic ${outdir}/intermediates/pipeline_input.bed \
@@ -145,6 +147,8 @@ if [ "$pipeline" == "population" ]; then
         --vcf $input_vcf \
         --lifted-coord $liftover_bed \
         --extract-genotype \
+        --no-infer-rareness \
+        --no-filter-ethnicity \
         --genotype-filters $filters \
         --out-annotsv ${outdir}/intermediates/vep_input.tsv \
         --out-generic ${outdir}/intermediates/pipeline_input.bed \
@@ -158,6 +162,8 @@ elif [ "$pipeline" == "smallset" ]; then
   extract_rare_variants \
   --vcf $input_vcf \
   --extract-genotype \
+  --no-infer-rareness \
+  --no-filter-ethnicity \
   --genotype-filters ${filters} \
   --out-annotsv ${outdir}/intermediates/vep_input.tsv \
   --out-generic ${outdir}/intermediates/pipeline_input.bed \
