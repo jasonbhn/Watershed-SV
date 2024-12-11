@@ -535,11 +535,9 @@ prep_vep_input \
 ${outdir}/intermediates/gene_sv_slop.${flank}.bed \
 ${outdir}/intermediates/vep_input.${flank}.bed
 
-run_extract_sv_vep_annotations /home/bni1/vep.sif \
-${outdir}/intermediates/vep_input.${flank}.bed \
+run_extract_sv_vep_annotations ${outdir}/intermediates/vep_input.${flank}.bed \
 ${vep_cache_dir} \
 ${outdir}/intermediates/tmp.tsv \
-${outdir}/intermediates/sv_to_gene_vep.${flank}.tsv \
-${flank}
+${outdir}/intermediates/sv_to_gene_vep.${flank}.tsv
 
 echo 'Done extracting gene sv vep annotations'
