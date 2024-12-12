@@ -136,6 +136,8 @@ if __name__ == '__main__':
                     help='either collapse rare SV nearby gene, or evaluate as per gene per sv. ')
     parser.add_argument('--remove-control-genes',action=argparse.BooleanOptionalAction,metavar='[--remove-control-genes|--no-remove-control-genes]',
                     help='remove genes with no outliers or not')
+    parser.add_argument('--filter-rare',action=argparse.BooleanOptionalAction,metavar='[--filter-rare|--no-filter-rare]',
+                    help='remove not rare sv or not')
     parser.add_argument('--flank',type=int,required=True,metavar='[input flank dist]',
                     help='select flank dist to parse')
     parser.add_argument('--zscore-threshold',type=float,required=False,default=3,metavar='[outlier threshold for gene inclusions]',
@@ -192,8 +194,11 @@ if __name__ == '__main__':
     ]),how='left',on=['gene_id','SUBJID']).\
     with_columns(pl.when(pl.col('median_outlier').abs() > args.zscore_threshold).then(1).otherwise(0).alias('Y')).drop(['median_outlier','tissue_count'])
     # next step is to filter to nonzero and high qual alleles.
-    # to fix AF part. 
-    rare_maf_frame = maf_frame.filter((pl.col('af')<0.01)&(pl.col('af')>=0))
+    # filter to only rare variants or any variants. 
+    if args.filter_rare:
+        rare_maf_frame = maf_frame.filter((pl.col('af')<0.01)&(pl.col('af')>=0))
+    else:
+        rare_maf_frame = maf_frame.filter(pl.col('af')>=0)
     true_rare_alleles = genotypes.filter((pl.col("Allele")>0)).join(rare_maf_frame.select("SV"),on='SV',how='inner')
     # then filter to those that are near by genes,
     noBND_SV_Ind_Gene = true_rare_alleles.join(gene_sv.select(['gene_id','SV']),on='SV',how='inner').\
