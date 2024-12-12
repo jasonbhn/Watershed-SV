@@ -177,7 +177,7 @@ if __name__ == '__main__':
     genes = genes.with_columns(pl.col('gene').str.split(by='.').list.first().alias('gene_id'))
 
     # process files for getting rare var and expressions
-    genotypes = genotypes.filter(pl.col('SVTYPE')!='BND').with_columns(pl.when(pl.col('SVTYPE')=='VNTR').then('DUP').otherwise(pl.col('SVTYPE')))
+    genotypes = genotypes.filter(pl.col('SVTYPE')!='BND').with_columns(pl.when(pl.col('SVTYPE')=='VNTR').then(pl.lit('DUP')).otherwise(pl.col('SVTYPE')))
 
     # filter to tissue with at least 5 measurements.
     median_expression_df_protein_coding = expression_df.\
@@ -187,11 +187,11 @@ if __name__ == '__main__':
             pl.col('value').drop_nans().len().alias('tissue_count')
         ]).rename({args.expression_id_field:'SUBJID','gene':'gene_id'}).\
         with_columns(pl.col('gene_id').str.split(by='.').list.first()).\
-        join(genes.select('gene_id'),on='gene_id',how='inner').collect()
+        join(genes.select('gene_id'),on='gene_id',how='inner',coalesce=True).collect()
     qualified_expression_protein_coding = median_expression_df_protein_coding.filter(pl.col('tissue_count')>=args.minimum_support_tissue_count).lazy()
     expression_df_protein_coding = qualified_expression_protein_coding.join(expression_df.rename({args.expression_id_field:'SUBJID','gene':'gene_id'}).with_columns([
         pl.col('gene_id').str.split(by='.').list.first()
-    ]),how='left',on=['gene_id','SUBJID']).\
+    ]),how='left',on=['gene_id','SUBJID'],coalesce=True).\
     with_columns(pl.when(pl.col('median_outlier').abs() > args.zscore_threshold).then(1).otherwise(0).alias('Y')).drop(['median_outlier','tissue_count'])
     # next step is to filter to nonzero and high qual alleles.
     # filter to only rare variants or any variants. 
@@ -199,10 +199,10 @@ if __name__ == '__main__':
         rare_maf_frame = maf_frame.filter((pl.col('af')<0.01)&(pl.col('af')>=0))
     else:
         rare_maf_frame = maf_frame.filter(pl.col('af')>=0)
-    true_rare_alleles = genotypes.filter((pl.col("Allele")>0)).join(rare_maf_frame.select("SV"),on='SV',how='inner')
+    true_rare_alleles = genotypes.filter((pl.col("Allele")>0)).join(rare_maf_frame.select("SV"),on='SV',how='inner',coalesce=True)
     # then filter to those that are near by genes,
-    noBND_SV_Ind_Gene = true_rare_alleles.join(gene_sv.select(['gene_id','SV']),on='SV',how='inner').\
-        join(expression_df_protein_coding,on=['SUBJID','gene_id'],how='inner').filter(pl.col('SVTYPE')!='BND')
+    noBND_SV_Ind_Gene = true_rare_alleles.join(gene_sv.select(['gene_id','SV']),on='SV',how='inner',coalesce=True).\
+        join(expression_df_protein_coding,on=['SUBJID','gene_id'],how='inner',coalesce=True).filter(pl.col('SVTYPE')!='BND')
     # whether to remove control genes or not. 
     if args.remove_control_genes: # continue with groupby tomorrow morning!
         # filter to make sure at least 1 individual is outlier. 
@@ -253,11 +253,11 @@ if __name__ == '__main__':
     to_dummies(['SVTYPE'])
     gene_sv_annotation_w_region = gene_sv_slop_df.\
     join(gene_sv_gb_df.select(['Gene','SV',cs.starts_with('SVTYPE_')]),
-        on=['Gene','SV'],suffix='_gene_body',how='left').\
+        on=['Gene','SV'],suffix='_gene_body',how='left',coalesce=True).\
     join(gene_sv_tss_df.select(['Gene','SV',cs.starts_with('SVTYPE_')]),
-        on=['Gene','SV'],suffix='_tss_flank',how='left').\
+        on=['Gene','SV'],suffix='_tss_flank',how='left',coalesce=True).\
     join(gene_sv_tes_df.select(['Gene','SV',cs.starts_with('SVTYPE_')]),
-        on=['Gene','SV'],suffix='_tes_flank',how='left').\
+        on=['Gene','SV'],suffix='_tes_flank',how='left',coalesce=True).\
     select((~cs.ends_with('_CNV','_DEL','_DUP','_INS','_INV'))).with_columns([
         pl.col('Gene').str.split('.').list.first().alias('GeneName')
     ]).select(pl.exclude(['Gene','chrom','start','end']))
@@ -268,7 +268,7 @@ if __name__ == '__main__':
         annots_gene_body.append(pl.scan_csv(annot_file_gene_body,separator='\t',dtypes={'SV': str}))
     merged_annotations_gene_body = annots_gene_body[0]
     for i in range(1,len(annots_gene_body)):
-        merged_annotations_gene_body=merged_annotations_gene_body.join(annots_gene_body[i],how='outer',on=['Gene','SV'])
+        merged_annotations_gene_body=merged_annotations_gene_body.join(annots_gene_body[i],how='outer',on=['Gene','SV'],coalesce=True)
     uncollapsed_annotations_gene_body=merged_annotations_gene_body.rename({"Gene":"GeneName"}).\
     with_columns(pl.col('GeneName').str.split('.').list.first().alias('GeneName'))
     # tss flank
@@ -277,7 +277,7 @@ if __name__ == '__main__':
         annots_tss_flank.append(pl.scan_csv(annot_file_tss_flank,separator='\t',dtypes={'SV': str}))
     merged_annotations_tss_flank = annots_tss_flank[0]
     for i in range(1,len(annots_tss_flank)):
-        merged_annotations_tss_flank=merged_annotations_tss_flank.join(annots_tss_flank[i],how='outer',on=['Gene','SV'])
+        merged_annotations_tss_flank=merged_annotations_tss_flank.join(annots_tss_flank[i],how='outer',on=['Gene','SV'],coalesce=True)
     uncollapsed_annotations_tss_flank=merged_annotations_tss_flank.rename({"Gene":"GeneName"}).\
     select([
         pl.col(['GeneName','SV']),
@@ -290,7 +290,7 @@ if __name__ == '__main__':
         annots_tes_flank.append(pl.scan_csv(annot_file_tes_flank,separator='\t',dtypes={'SV': str}))
     merged_annotations_tes_flank = annots_tes_flank[0]
     for i in range(1,len(annots_tes_flank)):
-        merged_annotations_tes_flank=merged_annotations_tes_flank.join(annots_tes_flank[i],how='outer',on=['Gene','SV'])
+        merged_annotations_tes_flank=merged_annotations_tes_flank.join(annots_tes_flank[i],how='outer',on=['Gene','SV'],coalesce=True)
     uncollapsed_annotations_tes_flank=merged_annotations_tes_flank.rename({"Gene":"GeneName"}).\
     select([
         pl.col(['GeneName','SV']),
@@ -300,27 +300,27 @@ if __name__ == '__main__':
     filtered_total_data.collect().write_csv('test_filter_total_data.tsv',separator='\t',has_header=True)
     # merge all three regions together. 
     uncollapsed_dataset=filtered_total_data.rename({'SUBJID':'SubjectID','gene_id':'GeneName'}).\
-        join(uncollapsed_annotations_gene_body,on=['SV','GeneName'],how='left').\
-        join(uncollapsed_annotations_tss_flank,on=['SV','GeneName'],how='left').\
-        join(uncollapsed_annotations_tes_flank,on=['SV','GeneName'],how='left').\
-        join(gene_sv_annotation_w_region.lazy(),on=['SV','GeneName'],how='left')
+        join(uncollapsed_annotations_gene_body,on=['SV','GeneName'],how='left',coalesce=True).\
+        join(uncollapsed_annotations_tss_flank,on=['SV','GeneName'],how='left',coalesce=True).\
+        join(uncollapsed_annotations_tes_flank,on=['SV','GeneName'],how='left',coalesce=True).\
+        join(gene_sv_annotation_w_region.lazy(),on=['SV','GeneName'],how='left',coalesce=True)
     uncollapsed_dataset_with_MAF = uncollapsed_dataset.\
-    join(maf_frame.select(['SV','af']),on='SV',how='left')
+    join(maf_frame.select(['SV','af']),on='SV',how='left',coalesce=True)
     uncollapsed_dataset_with_MAF.collect().write_csv('test_initial_annotations.tsv',separator='\t',has_header=True) # good till here
     # merge in length.
     if args.length_mode == 'upload-SV' or args.length_mode == 'extract':
         length_frame=length_frame.with_columns(pl.col('length').log())
         uncollapsed_dataset_with_MAF_length = uncollapsed_dataset_with_MAF.\
-        join(length_frame.select(['SV','length']),on='SV',how='left')
+        join(length_frame.select(['SV','length']),on='SV',how='left',coalesce=True)
     else:
         length_frame=length_frame.with_columns(pl.col('length').log())
         uncollapsed_dataset_with_MAF_length = uncollapsed_dataset_with_MAF.\
-        join(length_frame.select(['SubjectID','SV','length']),on=['SubjectID','SV'],how='left')
+        join(length_frame.select(['SubjectID','SV','length']),on=['SubjectID','SV'],how='left',coalesce=True)
     # merge in CN. 
     if args.CN_mode == 'upload':
         # replace CN
         uncollapsed_dataset_with_MAF_length_CN = uncollapsed_dataset_with_MAF_length.drop('CN').\
-        join(CN_frame.select(['SV','SubjectID','dCN']),on=['SV','SubjectID'],how='left')
+        join(CN_frame.select(['SV','SubjectID','dCN']),on=['SV','SubjectID'],how='left',coalesce=True)
         uncollapsed_dataset_with_MAF_length_CN = uncollapsed_dataset_with_MAF_length_CN.with_columns(pl.col('dCN').fill_null(0))
     else:
         # CN still need special imputations. 
