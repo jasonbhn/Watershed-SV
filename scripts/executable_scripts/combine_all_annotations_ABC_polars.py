@@ -281,7 +281,7 @@ if __name__ == '__main__':
     uncollapsed_annotations_tss_flank=merged_annotations_tss_flank.rename({"Gene":"GeneName"}).\
     select([
         pl.col(['GeneName','SV']),
-        pl.all().exclude(['GeneName','SV']).suffix('_tss_flank')
+        pl.all().exclude(['GeneName','SV']).name.suffix('_tss_flank')
     ]).with_columns(pl.col('GeneName').str.split('.').list.first().alias('GeneName'))
 
     # tes flank
@@ -294,7 +294,7 @@ if __name__ == '__main__':
     uncollapsed_annotations_tes_flank=merged_annotations_tes_flank.rename({"Gene":"GeneName"}).\
     select([
         pl.col(['GeneName','SV']),
-        pl.all().exclude(['GeneName','SV']).suffix('_tes_flank')
+        pl.all().exclude(['GeneName','SV']).name.suffix('_tes_flank')
     ]).with_columns(pl.col('GeneName').str.split('.').list.first().alias('GeneName'))
     # debug line!!!!!!!!!!!!!
     filtered_total_data.collect().write_csv('test_filter_total_data.tsv',separator='\t',has_header=True)
