@@ -182,7 +182,7 @@ if __name__ == '__main__':
     # filter to tissue with at least 5 measurements.
     median_expression_df_protein_coding = expression_df.\
         melt(id_vars=['gene','Ind']).\
-        groupby(['gene','Ind']).agg([
+        group_by(['gene','Ind']).agg([
             pl.col('value').drop_nans().median().alias('median_outlier'),
             pl.col('value').drop_nans().len().alias('tissue_count')
         ]).rename({args.expression_id_field:'SUBJID','gene':'gene_id'}).\
@@ -362,7 +362,7 @@ if __name__ == '__main__':
 
     # iterate through collapse dict as comprehension to do aggregation
     collapsed_complete_dataset = uncollapsed_dataset_with_MAF_length_CN.drop(['SV','Y']).\
-        groupby(['SubjectID','GeneName']).agg(
+        group_by(['SubjectID','GeneName']).agg(
             [
                 pl.col(col).max() if method =='max' 
                 else pl.col(col).min() if method =='min'
