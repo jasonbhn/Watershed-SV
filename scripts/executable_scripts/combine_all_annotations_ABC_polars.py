@@ -297,7 +297,7 @@ if __name__ == '__main__':
         pl.all().exclude(['GeneName','SV']).name.suffix('_tes_flank')
     ]).with_columns(pl.col('GeneName').str.split('.').list.first().alias('GeneName'))
     # debug line!!!!!!!!!!!!!
-    filtered_total_data.collect().write_csv('test_filter_total_data.tsv',separator='\t',has_header=True)
+    filtered_total_data.collect().write_csv('test_filter_total_data.tsv',separator='\t',include_header=True)
     # merge all three regions together. 
     uncollapsed_dataset=filtered_total_data.rename({'SUBJID':'SubjectID','gene_id':'GeneName'}).\
         join(uncollapsed_annotations_gene_body,on=['SV','GeneName'],how='left',coalesce=True).\
@@ -306,7 +306,7 @@ if __name__ == '__main__':
         join(gene_sv_annotation_w_region.lazy(),on=['SV','GeneName'],how='left',coalesce=True)
     uncollapsed_dataset_with_MAF = uncollapsed_dataset.\
     join(maf_frame.select(['SV','af']),on='SV',how='left',coalesce=True)
-    uncollapsed_dataset_with_MAF.collect().write_csv('test_initial_annotations.tsv',separator='\t',has_header=True) # good till here
+    uncollapsed_dataset_with_MAF.collect().write_csv('test_initial_annotations.tsv',separator='\t',include_header=True) # good till here
     # merge in length.
     if args.length_mode == 'upload-SV' or args.length_mode == 'extract':
         length_frame=length_frame.with_columns(pl.col('length').log())
