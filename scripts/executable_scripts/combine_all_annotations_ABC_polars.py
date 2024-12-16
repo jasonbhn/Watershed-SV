@@ -341,7 +341,7 @@ if __name__ == '__main__':
         uncollapsed_dataset_with_MAF_length_CN=uncollapsed_dataset_with_MAF_length_CN.with_columns(pl.concat_str([pl.col('GeneName'),pl.col('SV')],separator=':').alias('GeneName'))
     # get pvalues:
     uncollapsed_dataset_with_MAF_length_CN=uncollapsed_dataset_with_MAF_length_CN.\
-    with_columns(cs.starts_with(args.expression_field).map_alias(lambda c: 'TE_pvalues_' + c.lstrip(args.expression_field)))\
+    with_columns(cs.starts_with(args.expression_field).name.map(lambda c: 'TE_pvalues_' + c.lstrip(args.expression_field)))\
     .select(~cs.starts_with(args.expression_field))
    
     # collapsing annotations. 
