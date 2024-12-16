@@ -378,7 +378,7 @@ if __name__ == '__main__':
         )
     # leave imputation to after train_test_split
     collapsed_complete_dataset = collapsed_complete_dataset.with_columns(
-        cs.starts_with('TE_pvalues').map(lambda x: stats.norm.sf(abs(x))*2*np.sign(x))
+        cs.starts_with('TE_pvalues').map_batches(lambda x: stats.norm.sf(abs(x))*2*np.sign(x))
     )
     collapsed_complete_dataset.write_csv(args.outfile,separator='\t')
 
