@@ -3,16 +3,52 @@
 set -o nounset -o pipefail -o errexit
 
 # step 1. parse arguments: use getopt
-SHORT=p:,v:,f:,k:,m:,r:,l:,o:,b:,t:,g:,d:,c:,a:,e:,i:,h
-LONG=pipeline:,input-vcf:,filters:,flank:,medz-cutoff:,rareness:,liftover-bed:,outdir:\
+SHORT=x:,p:,v:,f:,k:,m:,r:,l:,o:,b:,t:,g:,d:,c:,a:,e:,i:,h
+LONG=annotation-dir:,pipeline:,input-vcf:,filters:,flank:,medz-cutoff:,rareness:,liftover-bed:,outdir:\
 ,genome-bound-file:,transcript-origin:,gencode-genes:,genome-build:,vep-cache-dir:,metadata:,filter-ethnicity:,filter-rare:,help
 OPTS=$(getopt -a -n sv_annotations --options $SHORT --longoptions $LONG -- "$@")
+# help function full set
+function show_help {
+    cat << EOF
+Usage: ${0##*/} [OPTIONS]
+
+Extract genomic annotations for SVs regional: tss-flank, gene-body, tes-flank
+
+Required Arguments:
+    -x, --annotation-dir     Annotation source files directory, 
+    -p, --pipeline            Pipeline name/type, [population/smallset], population means we're inferring MAF from vcf, else we do not make inference
+    -v, --input-vcf          Input VCF file path
+    -f, --filters            Filter specifications for vcf records
+    -o, --outdir            Output directory path for annotations
+    -k, --flank              Flank size, how long the tss, tes flanks are
+    -m, --medz-cutoff        z-score cutoff [default: value]
+    -r, --rareness           Rareness threshold [default: value]
+    -l, --liftover-bed       Liftover BED file path, if you have hg19, please liftover to hg38.
+    -b, --genome-bound-file  Genome boundary file path
+    -t, --transcript-origin  Transcript origin specification
+    -g, --gencode-genes      GENCODE genes file path
+    -d, --genome-build       Genome build version
+    -c, --vep-cache-dir      VEP cache directory path
+    -a, --metadata           Metadata file path
+    -e, --filter-ethnicity   Ethnicity filter criteria
+    -i, --filter-rare        Rare variant filter criteria
+    -h, --help              Show this help message and exit
+
+
+Notes:
+    - Multiple filters can be comma-separated
+EOF
+}
 
 eval set -- "$OPTS"
 
 while :
 do
   case "$1" in
+    -x | --annotation-dir )
+      annotation_dir="$2"
+      shift 2
+      ;;
     -p | --pipeline )
       pipeline="$2"
       shift 2
@@ -225,7 +261,7 @@ echo 'Done extracting exon sv overlaps'
 
 # sv_to_gene_remap:
 if [ ! -f "${outdir}/intermediates/remap_crm_sv.dist.${flank}.tsv" ]; then
-remap_crm=input/remap2020_crm_macs2_hg38_v1_0.bed.gz
+remap_crm=${annotation_dir}/remap2020_crm_macs2_hg38_v1_0.bed.gz
 zcat ${remap_crm} | awk '{OFS="\t";print $1,$2,$3,$5}' | 
 bedtools intersect -wa -wb -a stdin -b ${outdir}/intermediates/gene_sv.${flank}.bed | 
 awk '{OFS="\t";print $8,$10,$4}' | 
@@ -238,7 +274,7 @@ echo 'Done extracting gene sv remap overlap'
 
 # sv_to_gene_tss_remap:
 if [ ! -f "${outdir}/intermediates_tss_flank/remap_crm_sv.dist.${flank}.tsv" ]; then
-remap_crm=input/remap2020_crm_macs2_hg38_v1_0.bed.gz
+remap_crm=${annotation_dir}/remap2020_crm_macs2_hg38_v1_0.bed.gz
 zcat ${remap_crm} | awk '{OFS="\t";print $1,$2,$3,$5}' | 
 bedtools intersect -wa -wb -a stdin -b ${outdir}/intermediates_tss_flank/gene_sv.${flank}.bed | 
 awk '{OFS="\t";print $8,$10,$4}' | 
@@ -251,7 +287,7 @@ echo 'Done extracting gene sv remap overlap'
 
 # sv_to_gene_tes_remap:
 if [ ! -f "${outdir}/intermediates_tes_flank/remap_crm_sv.dist.${flank}.tsv" ]; then
-remap_crm=input/remap2020_crm_macs2_hg38_v1_0.bed.gz
+remap_crm=${annotation_dir}/remap2020_crm_macs2_hg38_v1_0.bed.gz
 zcat ${remap_crm} | awk '{OFS="\t";print $1,$2,$3,$5}' | 
 bedtools intersect -wa -wb -a stdin -b ${outdir}/intermediates_tes_flank/gene_sv.${flank}.bed | 
 awk '{OFS="\t";print $8,$10,$4}' | 
@@ -265,7 +301,7 @@ echo 'Done extracting gene sv remap overlap'
 # TODO add ABC annotations. 
 # sv_to_gene_ABC:
 if [ ! -f "${outdir}/intermediates_tss_flank/SV_dist_to_gene.dist.${flank}.tsv" ]; then
-ABC_enhancers=input/ABC_enhancers.merged.All.sorted.11col.region.hg38.bed
+ABC_enhancers=${annotation_dir}/ABC_enhancers.merged.All.sorted.11col.region.hg38.bed
 # gene body
 bedtools intersect -wa -wb -a ${outdir}/intermediates/gene_sv.${flank}.bed -b ${ABC_enhancers} |
 awk 'BEGIN{print "SV\tGene\tis_ABC_SV"}; split($6,a,".") {OFS="\t";if (a[1]==$17) print $4,a[1],1}' > ${outdir}/intermediates/sv_to_gene_ABC.${flank}.tsv
@@ -291,7 +327,7 @@ fi
 echo 'Done extracting gene sv dist'
 
 # sv_to_gene_cpg_shell:
-cpg=input/cpgIslandExt.txt
+cpg=${annotation_dir}/cpgIslandExt.txt
 if [ ! -f "${outdir}/intermediates/sv_to_gene_cpg.dist.${flank}.tsv" ]; then
 # out format: 'chrom','start','end','SV','Gene','chrom','start','end','cpg'
 awk '{{FS="\t";OFS="\t";print $2,$3,$4,$10}}' ${cpg} > ${outdir}/intermediates/cpgtmp.bed
@@ -314,7 +350,7 @@ echo 'Done extracting gene sv cpg'
 # sv_to_gene_bw_scores_py:
 # gc content
 if [ ! -f "${outdir}/intermediates/GC_by_genes_SV.dist.${flank}.tsv" ]; then
-gc=input/gc5Base.bw
+gc=${annotation_dir}/gc5Base.bw
 # gene body
 sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates/gene_sv.${flank}.bed \
@@ -347,7 +383,7 @@ echo 'Done extracting gene sv gc'
 
 # linsight scores
 if [ ! -f "${outdir}/intermediates/LINSIGHT_by_genes_SV.dist.${flank}.tsv" ]; then
-linsight_file=input/LINSIGHT_hg38.bw
+linsight_file=${annotation_dir}/LINSIGHT_hg38.bw
 # gene body
 sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates/gene_sv.${flank}.bed \
@@ -380,7 +416,7 @@ echo 'Done extracting gene sv linsight'
 
 # phastCON 20 scores
 if [ ! -f "${outdir}/intermediates/PhastCON20_by_genes_SV.dist.${flank}.tsv" ]; then
-phcon20_file=input/hg38.phastCons20way.bw
+phcon20_file=${annotation_dir}/hg38.phastCons20way.bw
 # gene body
 sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates/gene_sv.${flank}.bed \
@@ -413,7 +449,7 @@ echo 'Done extracting gene sv phastcon'
 
 # CADD scores
 if [ ! -f "${outdir}/intermediates/CADD_by_genes_SV.dist.${flank}.tsv" ]; then
-cadd_file=input/CADD_GRCh38-v1.6.bw # use mean top 10
+cadd_file=${annotation_dir}/CADD_GRCh38-v1.6.bw # use mean top 10
 # gene body
 sv_to_gene_bw_scores \
 --gene-sv ${outdir}/intermediates/gene_sv.${flank}.bed \
@@ -447,7 +483,7 @@ echo 'Done extracting gene sv CADD'
 
 # sv_to_gene_TADs:
 if [ ! -f "${outdir}/intermediates/TAD_boundary_by_genes_SV.dist.${flank}.tsv" ]; then
-TADs_dir=input/TAD # hg38 from starting annotations
+TADs_dir=${annotation_dir}/TAD # hg38 from starting annotations
 clean_TADs ${TADs_dir} ${outdir}/intermediates/TAD_cleaned
 # gene body 
 bedtools slop -i ${outdir}/intermediates/gene_sv.${flank}.bed -g ${genome_bound_file} -b 5000 > ${outdir}/intermediates/TAD_5000_flank_gene_SV.bed
@@ -470,8 +506,8 @@ awk 'BEGIN{{print "SV\tGene\tnum_TADs"}};{{OFS="\t";print}}' > ${outdir}/interme
 echo 'Done extracting gene sv TAD'
 fi
 # merge_enhancers:
-enhancers=input/matrix_hs.csv
-primary_cells=input/hs_primary.txt
+enhancers=${annotation_dir}/matrix_hs.csv
+primary_cells=${annotation_dir}/hs_primary.txt
 if [ ! -f "${outdir}/intermediates/enhancers_by_genes_SV.dist.${flank}.tsv" ]; then
 merge_enhancers \
 --enhancers ${enhancers} \
@@ -503,7 +539,7 @@ echo 'Done extracting gene sv enhancer'
 
 # process_roadmaps:
 if [ ! -f "${outdir}/intermediates/combined_roadmaps.dist.${flank}.tsv" ]; then
-roadmap_dir=input/roadmap_all_gtex
+roadmap_dir=${annotation_dir}/roadmap_all_gtex
 split_bed_by_stateno ${roadmap_dir} ${outdir}/intermediates/processed_roadmaps
 # sv_to_gene_roadmaps
 for i in {1..25}
@@ -511,7 +547,6 @@ do
 sv_to_gene_roadmap ${outdir}/intermediates/gene_sv.${flank}.bed ${outdir}/intermediates/processed_roadmaps ${outdir}/intermediates/roadmap_multitissue_sv_to_gene.${i}.tsv ${i}
 sv_to_gene_roadmap ${outdir}/intermediates_tss_flank/gene_sv.${flank}.bed ${outdir}/intermediates/processed_roadmaps ${outdir}/intermediates_tss_flank/roadmap_multitissue_sv_to_gene.${i}.tsv ${i}
 sv_to_gene_roadmap ${outdir}/intermediates_tes_flank/gene_sv.${flank}.bed ${outdir}/intermediates/processed_roadmaps ${outdir}/intermediates_tes_flank/roadmap_multitissue_sv_to_gene.${i}.tsv ${i}
-
 done
 
 # combine_sv_to_gene_roadmaps:
