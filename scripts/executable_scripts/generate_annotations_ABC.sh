@@ -114,7 +114,7 @@ do
       shift 2
       ;;
     -h | --help )
-      echo "Extract genomic annotations for SVs v1"
+      show_help
       exit 0
       ;;
     -- )
