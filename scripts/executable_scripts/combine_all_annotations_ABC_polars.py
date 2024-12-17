@@ -98,21 +98,21 @@ def extract_length(vcf_path,field='SVLEN'):
 #   c. output files prefix, mode i, 1 file, mode ii 2 files. 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='tools to clean up, impute watershed input')
-    parser.add_argument('--vcf',type=str,required=True,metavar='[input rare SV VCF file]',
-                    help='select [rare_SV].vcf to parse')
-    parser.add_argument('--genotypes',type=str,required=True,metavar='[input genotype VCF file]',
-                    help='select [rare_SV].genotype to parse')
+    parser.add_argument('--vcf',type=str,required=True,metavar='[input SV VCF file]',
+                    help='select [SV].vcf to parse')
+    parser.add_argument('--genotypes',type=str,required=True,metavar='[input genotype file]',
+                    help='select [SV].genotype to parse, output of annotation pipeline')
     parser.add_argument('--genes',type=str,required=True,metavar='[input gene list file]',
-                    help='select genes to parse')
+                    help='select genes to parse, output of annotation pipeline or custom')
     parser.add_argument('--gene-sv',type=str,required=True,metavar='[input sv-gene pair file]',
-                    help='select sv gene pairs to parse')
+                    help='select sv gene pairs to parse, output of annotation pipeline')
     parser.add_argument('--annotation-dir',type=str,required=True,metavar='[where the annotations are generater]',
-                    help='directory name of annotations, usually something.../intermediates, use anything before intermediates')
+                    help='directory name of annotations')
     parser.add_argument('--outfile',type=str,required=True,metavar='[where to output annotation]',
-                    help='where to output single set annotation. ')
+                    help='where to output merged annotation tsv')
     parser.add_argument('--expressions',type=str,required=True,metavar='[input gene expression file]',
-                    help='select gene expression to parse')
-    parser.add_argument('--expression-field',type=str,required=True,metavar='[column name of zscores]',
+                    help='select gene expression file to parse. This does not come from annotation pipeline')
+    parser.add_argument('--expression-field',type=str,required=True,metavar='[column name/prefix of zscores]',
                     help='select gene expression column to parse, it could be the PREFIX of columns, like TE_pvalues_Blood, TE_pvalues_Muscle...')
     parser.add_argument('--expression-id-field',type=str,required=True,metavar='[column name of each sample]',
                     help='select sample column to parse')
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     parser.add_argument('--filter-rare',action=argparse.BooleanOptionalAction,metavar='[--filter-rare|--no-filter-rare]',
                     help='remove not rare sv or not')
     parser.add_argument('--flank',type=int,required=True,metavar='[input flank dist]',
-                    help='select flank dist to parse')
+                    help='select flank dist to parse, note only tested to 100kb, performance not guaranteed beyond 100kb with default annotation pipeline')
     parser.add_argument('--zscore-threshold',type=float,required=False,default=3,metavar='[outlier threshold for gene inclusions]',
                     help='select z-score threhsold for selecting genes to include (if we are filtering out genes with no outliers at all. )')
     parser.add_argument('--minimum-support-tissue-count',type=int,required=False,default=5,metavar='[number of outlier signals required to be considered in study]',
