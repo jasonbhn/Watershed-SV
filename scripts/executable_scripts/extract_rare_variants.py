@@ -34,8 +34,11 @@ if __name__ == '__main__':
                     help='extract genotypes or not.')
     parser.add_argument('--filter-ethnicity',action=argparse.BooleanOptionalAction,metavar='[--filter-ethnicity|--no-filter-ethnicity]',
                     help='filter ethnicity or not.')
-    parser.add_argument('--infer-rareness',action=argparse.BooleanOptionalAction,metavar='[--extract-genotype|--no-extract-genotype]',
+    parser.add_argument('--infer-rareness',action=argparse.BooleanOptionalAction,metavar='[--infer-rareness|--no-infer-rareness]',
                     help='whether to infer rare vars from vcf or not.')
+    parser.add_argument('--filter-rare',action=argparse.BooleanOptionalAction,metavar='[--filter-rare|--no-filter-rare]',
+                    help='whether to filter to rare vars based on inferred maf or not')
+
     
 
     args = parser.parse_args()
@@ -49,6 +52,7 @@ if __name__ == '__main__':
     out_maf = args.out_maf
     extract_genotype = args.extract_genotype
     infer_rareness = args.infer_rareness
+    filter_rareness = args.filter_rareness
     filter_ethnicity = args.filter_ethnicity
     metadata_path = args.metadata
     print('hererererere!')
@@ -91,24 +95,27 @@ if __name__ == '__main__':
         genotypes['Allele']= genotypes['Allele'].astype('int')
         filtered_var = genotypes[genotypes.Allele>=0]
 
-        # filter 2, by not using the filter function directly, we avoided the loop. 
-        rare_status = filtered_var.groupby('SV').apply(is_rare)
-        # then calculate the condition first 
-        # finally use loc/iloc to get cols and rows of interest for maximal performance
-        rare_index = rare_status[rare_status==True].index
-        rare_SV_cond = filtered_var.SV.isin(rare_index)
-        rare_var = filtered_var.loc[rare_SV_cond]
+        # filter 2, by not using the filter function directly, we avoided the loop.
+        if filter_rareness:
+            rare_status = filtered_var.groupby('SV').apply(is_rare)
+            # then calculate the condition first 
+            # finally use loc/iloc to get cols and rows of interest for maximal performance
+            rare_index = rare_status[rare_status==True].index
+            rare_SV_cond = filtered_var.SV.isin(rare_index)
+            rare_var = filtered_var.loc[rare_SV_cond]
 
-        # filter 3, flip variants if MAF flipped...
-        flipped_status = rare_var.groupby('SV').apply(is_flipped)
-        flipped_index = flipped_status[flipped_status==True].index
-        flipped_cond = rare_var.SV.isin(flipped_index)
-        rare_var.SVTYPE = collapse_types(rare_var.SVTYPE)
-        rare_var.loc[flipped_cond,'Allele'] = 2-rare_var.loc[flipped_cond,'Allele']
-        rare_var.loc[flipped_cond,'SVTYPE'] = flipped_type(rare_var.loc[flipped_cond,'SVTYPE'])
+            # filter 3, flip variants if MAF flipped... only do this if we trust the MAF inference. 
+            flipped_status = rare_var.groupby('SV').apply(is_flipped)
+            flipped_index = flipped_status[flipped_status==True].index
+            flipped_cond = rare_var.SV.isin(flipped_index)
+            rare_var.SVTYPE = collapse_types(rare_var.SVTYPE)
+            rare_var.loc[flipped_cond,'Allele'] = 2-rare_var.loc[flipped_cond,'Allele']
+            rare_var.loc[flipped_cond,'SVTYPE'] = flipped_type(rare_var.loc[flipped_cond,'SVTYPE'])
+        else:
+            rare_var = filtered_var
+            rare_var.SVTYPE = collapse_types(rare_var.SVTYPE)
+        # get SVid changed regardless of filter rare or not. 
         rare_var['SVid'] = [i.split('.')[0] for i in rare_var.SV]
-
-
         # compute allele frequency here
         maf_frame = rare_var.groupby('SV').apply(maf).reset_index(name='af')
         # filter again for rare cnv
