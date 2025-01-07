@@ -52,7 +52,7 @@ if __name__ == '__main__':
     out_maf = args.out_maf
     extract_genotype = args.extract_genotype
     infer_rareness = args.infer_rareness
-    filter_rareness = args.filter_rareness
+    filter_rare = args.filter_rare
     filter_ethnicity = args.filter_ethnicity
     metadata_path = args.metadata
     print('hererererere!')
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         filtered_var = genotypes[genotypes.Allele>=0]
 
         # filter 2, by not using the filter function directly, we avoided the loop.
-        if filter_rareness:
+        if filter_rare:
             rare_status = filtered_var.groupby('SV').apply(is_rare)
             # then calculate the condition first 
             # finally use loc/iloc to get cols and rows of interest for maximal performance
