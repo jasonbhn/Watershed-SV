@@ -106,6 +106,8 @@ if __name__ == '__main__':
                     help='select genes to parse, output of annotation pipeline or custom')
     parser.add_argument('--gene-sv',type=str,required=True,metavar='[input sv-gene pair file]',
                     help='select sv gene pairs to parse, output of annotation pipeline')
+    parser.add_argument('--collapse-annotation-instruction',type=str,required=True,metavar='[file with instructions on how to collapse gene level annotations]',
+                    help='Collapse gene-sv annotations to gene level annotations, this file provides the instructions')
     parser.add_argument('--annotation-dir',type=str,required=True,metavar='[where the annotations are generater]',
                     help='directory name of annotations')
     parser.add_argument('--outfile',type=str,required=True,metavar='[where to output annotation]',
@@ -345,7 +347,7 @@ if __name__ == '__main__':
     .select(~cs.starts_with(args.expression_field))
    
     # collapsing annotations. 
-    methods=pd.read_csv('collapse_annotation_instructions.tsv',sep='\t')
+    methods=pd.read_csv(args.collapse_annotation_instructions,sep='\t')
     collapse_records=methods.to_records()
     collapse_dict={record[1]:record[3] for record in collapse_records}
     del collapse_dict['GeneName']
