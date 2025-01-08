@@ -347,7 +347,7 @@ if __name__ == '__main__':
     .select(~cs.starts_with(args.expression_field))
    
     # collapsing annotations. 
-    methods=pd.read_csv(args.collapse_annotation_instructions,sep='\t')
+    methods=pd.read_csv(args.collapse_annotation_instruction,sep='\t')
     collapse_records=methods.to_records()
     collapse_dict={record[1]:record[3] for record in collapse_records}
     del collapse_dict['GeneName']
