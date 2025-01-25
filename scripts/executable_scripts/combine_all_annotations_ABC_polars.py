@@ -154,7 +154,7 @@ if __name__ == '__main__':
     genotypes = pl.scan_csv(args.genotypes,separator='\t',dtypes={'SV': str})
     gene_sv = pl.scan_csv(args.gene_sv,separator='\t',has_header=False,new_columns=['chr','start','end','SV','SVTYPE','Gene'],dtypes={'SV': str})
     gene_sv = gene_sv.with_columns(pl.col('Gene').str.split(by='.').list.first().alias('gene_id'))
-    expression_df = pl.scan_csv(args.expressions,separator='\t')
+    expression_df = pl.scan_csv(args.expressions,separator='\t',dtypes={args.expression_id_field:str})
     # extract maf
     if args.maf_mode == 'extract':
         maf_frame = extract_MAF(args.vcf,args.maf_field).rename(columns={args.maf_field:'af'})
@@ -183,8 +183,8 @@ if __name__ == '__main__':
 
     # filter to tissue with at least 5 measurements.
     median_expression_df_protein_coding = expression_df.\
-        melt(id_vars=['gene','Ind']).\
-        group_by(['gene','Ind']).agg([
+        melt(id_vars=['gene',args.expression_id_field]).\
+        group_by(['gene',args.expression_id_field]).agg([
             pl.col('value').drop_nans().median().alias('median_outlier'),
             pl.col('value').drop_nans().len().alias('tissue_count')
         ]).rename({args.expression_id_field:'SUBJID','gene':'gene_id'}).\
