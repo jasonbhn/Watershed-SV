@@ -6,6 +6,7 @@ on:
       version:
         description: Version to install into container
         required: true
+        default: 'latest'
 
 jobs:
   push_docker_containers:
@@ -45,16 +46,34 @@ jobs:
           username: ${{ vars.DOCKERIO_USERNAME }}
           password: ${{ secrets.DOCKERIO_TOKEN }}
 
+      - id: latest-version
+        name: Get latest version
+        if: ${{ github.event.inputs.version }} == "latest"
+        uses: pozetroninc/github-action-get-latest-release@v0.8.0
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.CI_TOKEN }}
+
+      - name: Set version
+        id: set-version
+        run: |
+          if [[ ${{ github.event.inputs.version }} != "latest" ]]; then
+            version=${{ github.event.inputs.version }}
+          else
+            version=${{ steps.latest-version.outputs.release }}
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
       - name: Build and push docker containers
         uses: docker/build-push-action@v4
         with:
-          build-args: VERSION=${{ github.event.inputs.version }}
+          build-args: VERSION=${{ steps.set-version.outputs.version }}
           file: .github/dockerfiles/pixi_watershed.df
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/watershed-sv:${{ github.event.inputs.version }}
+            ghcr.io/${{ github.repository_owner }}/watershed-sv:${{ steps.set-version.outputs.version }}
             ghcr.io/${{ github.repository_owner }}/watershed-sv:latest
-            quay.io/${{ vars.QUAYIO_USERNAME }}/watershed-sv:${{ github.event.inputs.version }}
+            quay.io/${{ vars.QUAYIO_USERNAME }}/watershed-sv:${{ steps.set-version.outputs.version }}
             quay.io/${{ vars.QUAYIO_USERNAME }}/watershed-sv:latest
-            docker.io/${{ vars.DOCKERIO_USERNAME }}/watershed-sv:${{ github.event.inputs.version }}
+            docker.io/${{ vars.DOCKERIO_USERNAME }}/watershed-sv:${{ steps.set-version.outputs.version }}
             docker.io/${{ vars.DOCKERIO_USERNAME }}/watershed-sv:latest
