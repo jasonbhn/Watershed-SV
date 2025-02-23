@@ -60,6 +60,7 @@ jobs:
       - name: Create recipe from template
         shell: pixi exec --spec sed --spec coreutils -- bash -e {0}
         run: |
+          cp .github/recipe/build.sh /tmp/recipe/build.sh
           cp .github/recipe/recipe.yaml /tmp/recipe/recipe.yaml
           repository=${{ github.repository }}
           build=${{ github.event.inputs.build }}
