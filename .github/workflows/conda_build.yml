@@ -61,7 +61,6 @@ jobs:
         shell: pixi exec --spec sed --spec coreutils -- bash -e {0}
         run: |
           cp .github/recipe/recipe.yaml /tmp/recipe/recipe.yaml
-          cp .github/recipe/variant_${{ matrix.variant}}.yaml /tmp/recipe/variants.yaml
           repository=${{ github.repository }}
           build=${{ github.event.inputs.build }}
           version=${{ steps.set-version.outputs.version }}
