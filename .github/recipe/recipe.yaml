@@ -6,7 +6,7 @@ package:
   version: ${{ version }}
 
 source:
-  url: Watershed-SV-${{ version }}.tar.gz
+  path: Watershed-SV-${{ version }}.tar.gz
   sha256: SHA256SUM_PLACEHOLDER
 
 build:
