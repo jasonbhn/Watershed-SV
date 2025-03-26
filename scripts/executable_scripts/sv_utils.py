@@ -169,7 +169,12 @@ def extract_genotype_tuples(vcf_path,additional_info_fields=[],
                 samples_x = list(set(samples).intersection(set(race_df.index.tolist())))
                 samples = list(race_df.loc[samples_x].loc[race_df==3].index)
     for record in vcf_in.fetch():
-        if list(record.filter)[0] not in filters_pass:
+        record_filters = list(record.filter)
+        if len(record_filters) == 0:
+            if '.' not in record_filters:
+                low_qual_list.append(record.id)
+                continue
+        if record_filters[0] not in filters_pass:
             low_qual_list.append(record.id)
             continue
         if not record.id:
