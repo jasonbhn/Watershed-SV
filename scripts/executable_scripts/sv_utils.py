@@ -144,7 +144,7 @@ def extract_genotype_tuples(vcf_path,additional_info_fields=[],
     Alleles_list = []
     SV_bed_list = []
     low_qual_list = []
-    gt_dict = {(0,0):0,(0,1):1,(1,1):2,(0,None):0,(1,None):1,(None,None):-1,(None,):-1,(0,):0,(1,):1}
+    gt_dict = {(0,0):0,(0,1):1,(1,1):2,(1,0):1,(0,None):0,(1,None):1,(None,None):-1,(None,):-1,(0,):0,(1,):1}
     # vcf input read with pysam VariantFile class
     vcf_in = VariantFile(vcf_path)
     # get return bedfile numpy matrix dtype
