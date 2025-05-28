@@ -2,7 +2,7 @@ version 1.0
 
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_bw_scores.wdl"
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/combine_sv_to_gene_roadmaps.wdl"
-import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/extract_rare_variants_copy.wdl"
+import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/extract_rare_variants.wdl"
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/extract_gene_exec.wdl"
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/merge_enhancers.wdl"
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/process_roadmaps.wdl"
@@ -11,10 +11,10 @@ import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_dist.wdl"
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_geneCPG.wdl"
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_enhancers.wdl"
-import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_tss_flank_processing.wdl" as sv_to_gene_tss_flank_processing
-import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_tes_flank_processing.wdl" as sv_to_gene_tes_flank_processing
-import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_slop_processing.wdl" as sv_to_gene_slop_processing
-import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_processing.wdl" as sv_to_gene_processing
+import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_tss_flank_processing.wdl"
+import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_tes_flank_processing.wdl"
+import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_slop_processing.wdl"
+import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_processing.wdl"
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_remap.wdl"
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/TAD_annotation_clean_up.wdl"
 import "https://raw.githubusercontent.com/phanson2k/Watershed-SV/refs/heads/WDL/modules/sv_to_gene_tad.wdl"
@@ -99,7 +99,7 @@ workflow Watershed_SV {
         String docker
     }
 
-    call descriptor.extract_rare_variants {
+    call extract_rare_variants.extract_rare_variants {
         input:
             input_vcf=input_vcf,
             metadata=metadata,
@@ -113,7 +113,7 @@ workflow Watershed_SV {
             ncpu=4
     }
 
-    call descriptor.extract_gene_exec {
+    call extract_gene_exec.extract_gene_exec {
         input:
             gencode_genes=gencode_genes,
             genome_bound_file=genome_bound_file,
@@ -170,7 +170,7 @@ workflow Watershed_SV {
             ncpu=4
     }
 
-    call descriptor.sv_to_exon {
+    call sv_to_exon.sv_to_exon {
         input:
             flank=flank,
             exon_bed=extract_gene_exec.exons,
@@ -182,7 +182,7 @@ workflow Watershed_SV {
     }
 
     # remap
-    call descriptor.sv_to_gene_remap as sv_to_gene_remap_gene_body {
+    call sv_to_gene_remap.sv_to_gene_remap as sv_to_gene_remap_gene_body {
         input:
             flank=flank,
             remap_crm=remap_crm,
@@ -192,7 +192,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_remap as sv_to_gene_remap_tss_flank {
+    call sv_to_gene_remap.sv_to_gene_remap as sv_to_gene_remap_tss_flank {
         input:
             flank=flank,
             remap_crm=remap_crm,
@@ -202,7 +202,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_remap as sv_to_gene_remap_tes_flank {
+    call sv_to_gene_remap.sv_to_gene_remap as sv_to_gene_remap_tes_flank {
         input:
             flank=flank,
             remap_crm=remap_crm,
@@ -213,7 +213,7 @@ workflow Watershed_SV {
             ncpu=4
     }
     # ABC
-    call descriptor.sv_to_geneABC as sv_to_geneABC_gene_body {
+    call sv_to_geneABC.sv_to_geneABC as sv_to_geneABC_gene_body {
         input:
             flank=flank,
             gene_sv_bed=sv_to_gene_processing.gene_sv_bed,
@@ -223,7 +223,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_geneABC as sv_to_geneABC_tss_flank {
+    call sv_to_geneABC.sv_to_geneABC as sv_to_geneABC_tss_flank {
         input:
             flank=flank,
             gene_sv_bed=sv_to_gene_tss_flank_processing.gene_sv_flank_bed,
@@ -233,7 +233,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_geneABC as sv_to_geneABC_tes_flank {
+    call sv_to_geneABC.sv_to_geneABC as sv_to_geneABC_tes_flank {
         input:
             flank=flank,
             gene_sv_bed=sv_to_gene_tes_flank_processing.gene_sv_flank_bed,
@@ -244,7 +244,7 @@ workflow Watershed_SV {
             ncpu=4
     }
     # cpg
-    call descriptor.sv_to_geneCPG as sv_to_geneCPG_gene_body {
+    call sv_to_geneCPG.sv_to_geneCPG as sv_to_geneCPG_gene_body {
         input:
             cpg_file=cpg_file,
             flank=flank,
@@ -254,7 +254,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_geneCPG as sv_to_geneCPG_tss_flank {
+    call sv_to_geneCPG.sv_to_geneCPG as sv_to_geneCPG_tss_flank {
         input:
             cpg_file=cpg_file,
             flank=flank,
@@ -264,7 +264,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_geneCPG as sv_to_geneCPG_tes_flank {
+    call sv_to_geneCPG.sv_to_geneCPG as sv_to_geneCPG_tes_flank {
         input:
             cpg_file=cpg_file,
             flank=flank,
@@ -275,7 +275,7 @@ workflow Watershed_SV {
             ncpu=4
     }
     #GC
-    call descriptor.sv_to_gene_bw_scores as GC_gene_body {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as GC_gene_body {
         input:
             flank=flank,
             bw=bw_GC,
@@ -289,7 +289,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_bw_scores as GC_tss_flank {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as GC_tss_flank {
         input:
             flank=flank,
             bw=bw_GC,
@@ -303,7 +303,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_bw_scores as GC_tes_flank {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as GC_tes_flank {
         input:
             flank=flank,
             bw=bw_GC,
@@ -319,7 +319,7 @@ workflow Watershed_SV {
     }
 
     # CADD
-    call descriptor.sv_to_gene_bw_scores as CADD_gene_body {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as CADD_gene_body {
         input:
             flank=flank,
             bw=bw_CADD,
@@ -333,7 +333,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_bw_scores as CADD_tss_flank {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as CADD_tss_flank {
         input:
             flank=flank,
             bw=bw_CADD,
@@ -347,7 +347,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_bw_scores as CADD_tes_flank {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as CADD_tes_flank {
         input:
             flank=flank,
             bw=bw_CADD,
@@ -363,7 +363,7 @@ workflow Watershed_SV {
     }
 
     # linsight
-    call descriptor.sv_to_gene_bw_scores as linsight_gene_body {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as linsight_gene_body {
         input:
             flank=flank,
             bw=bw_linsight,
@@ -377,7 +377,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_bw_scores as linsight_tss_flank {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as linsight_tss_flank {
         input:
             flank=flank,
             bw=bw_linsight,
@@ -391,7 +391,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_bw_scores as linsight_tes_flank {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as linsight_tes_flank {
         input:
             flank=flank,
             bw=bw_linsight,
@@ -406,7 +406,7 @@ workflow Watershed_SV {
             ncpu=4
     }
     # phastcon20
-    call descriptor.sv_to_gene_bw_scores as phastcon20_gene_body {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as phastcon20_gene_body {
         input:
             flank=flank,
             bw=bw_phastcon,
@@ -420,7 +420,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_bw_scores as phastcon20_tss_flank {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as phastcon20_tss_flank {
         input:
             flank=flank,
             bw=bw_phastcon,
@@ -434,7 +434,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_bw_scores as phastcon20_tes_flank {
+    call sv_to_gene_bw_scores.sv_to_gene_bw_scores as phastcon20_tes_flank {
         input:
             flank=flank,
             bw=bw_phastcon,
@@ -449,7 +449,7 @@ workflow Watershed_SV {
             ncpu=4
     }
     # TAD
-    call descriptor.TAD_annotation_clean_up {
+    call TAD_annotation_clean_up.TAD_annotation_clean_up {
         input:
             TADs_tar=TADs_tar,
             docker=docker,
@@ -457,7 +457,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_tad as sv_to_gene_tad_gene_body {
+    call sv_to_gene_tad.sv_to_gene_tad as sv_to_gene_tad_gene_body {
         input:
             flank=flank,
             cleaned_TAD_beds=TAD_annotation_clean_up.cleaned_TAD_beds,
@@ -468,7 +468,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_tad as sv_to_gene_tad_tss_flank {
+    call sv_to_gene_tad.sv_to_gene_tad as sv_to_gene_tad_tss_flank {
         input:
             flank=flank,
             cleaned_TAD_beds=TAD_annotation_clean_up.cleaned_TAD_beds,
@@ -479,7 +479,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.sv_to_gene_tad as sv_to_gene_tad_tes_flank {
+    call sv_to_gene_tad.sv_to_gene_tad as sv_to_gene_tad_tes_flank {
         input:
             flank=flank,
             cleaned_TAD_beds=TAD_annotation_clean_up.cleaned_TAD_beds,
@@ -491,7 +491,7 @@ workflow Watershed_SV {
             ncpu=4
     }
     # enhancers
-    call descriptor.merge_enhancers as merge_enhancers_gene_body {
+    call merge_enhancers.merge_enhancers as merge_enhancers_gene_body {
         input:
             flank=flank,
             enhancers=enhancers,
@@ -502,7 +502,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.merge_enhancers as merge_enhancers_tss_flank {
+    call merge_enhancers.merge_enhancers as merge_enhancers_tss_flank {
         input:
             flank=flank,
             enhancers=enhancers,
@@ -513,7 +513,7 @@ workflow Watershed_SV {
             disk_space=20,
             ncpu=4
     }
-    call descriptor.merge_enhancers as merge_enhancers_tes_flank {
+    call merge_enhancers.merge_enhancers as merge_enhancers_tes_flank {
         input:
             flank=flank,
             enhancers=enhancers,
@@ -525,7 +525,7 @@ workflow Watershed_SV {
             ncpu=4
     }
     # roadmap
-    call descriptor.process_roadmaps as process_roadmaps_gene_body {
+    call process_roadmaps.process_roadmaps as process_roadmaps_gene_body {
         input:
             flank=flank,
             roadmap_tar=roadmap_tar,
@@ -535,7 +535,7 @@ workflow Watershed_SV {
             disk_space=50,
             ncpu=8
     }
-    call descriptor.process_roadmaps as process_roadmaps_tss_flank {
+    call process_roadmaps.process_roadmaps as process_roadmaps_tss_flank {
         input:
             flank=flank,
             roadmap_tar=roadmap_tar,
@@ -545,7 +545,7 @@ workflow Watershed_SV {
             disk_space=50,
             ncpu=8
     }
-    call descriptor.process_roadmaps as process_roadmaps_tes_flank {
+    call process_roadmaps.process_roadmaps as process_roadmaps_tes_flank {
         input:
             flank=flank,
             roadmap_tar=roadmap_tar,
@@ -557,7 +557,7 @@ workflow Watershed_SV {
     }
 
 
-    call descriptor.sv_to_gene_dist {
+    call sv_to_gene_dist.sv_to_gene_dist {
         input:
             flank=flank,
             gene_bed=extract_gene_exec.genes,
@@ -571,7 +571,7 @@ workflow Watershed_SV {
 
     }
 
-    call descriptor.vep_preprocessing {
+    call vep_preprocessing.vep_preprocessing {
         input:
             flank=flank,
             gene_sv_slop=sv_to_gene_slop_processing.sv_gene_slop_bed,
@@ -581,7 +581,7 @@ workflow Watershed_SV {
             ncpu=8
     }
 
-    call descriptor.vep_call {
+    call vep_call.vep_call {
         input:
             vep_input=vep_preprocessing.vep_input,
             vep_cache_tar=vep_cache_tar,
@@ -591,7 +591,7 @@ workflow Watershed_SV {
             ncpu=8
     }
 
-    call descriptor.vep_post_processing {
+    call vep_post_processing.vep_post_processing {
         input:
             flank=flank,
             vep_out=vep_call.vep_out,
@@ -659,7 +659,7 @@ workflow Watershed_SV {
 #            disk_space=60,
 #            ncpu=4
 #    }
-    call descriptor.combine_annotations_ABC {
+    call combine_annotations_ABC.combine_annotations_ABC {
         input:
             collapse_instruction=collapse_instruction,
             flank=flank,
