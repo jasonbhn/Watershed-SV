@@ -4,6 +4,11 @@ task extract_gene_exec {
     input {
         File gencode_genes 
         File genome_bound_file
+
+        String docker
+        Int memory
+        Int disk_space
+        Int ncpu
     }
 
     output {
@@ -21,12 +26,11 @@ task extract_gene_exec {
     }
 
     command <<<
-        python3.10 scripts/executable_scripts/extract_gene_exec.py \
-            --gencode-annotations ${gencode_genes} \
-            --out-gene-bed genes.bed \
-            --out-exon-bed exons.bed \
-            --out-gene-tss gene_tss.tsv \
-            --out-gene-tes gene_tes.tsv \
-            --genome-bound ${genome_bound_file}
+        extract_gene_exec --gencode-annotations ~{gencode_genes} \
+        --out-gene-bed genes.bed \
+        --out-exon-bed exons.bed \
+        --out-gene-tss gene_tss.tsv \
+        --out-gene-tes gene_tes.tsv \
+        --genome-bound ~{genome_bound_file}
     >>>
 }

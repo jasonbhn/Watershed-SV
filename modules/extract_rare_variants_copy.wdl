@@ -7,15 +7,22 @@ task extract_rare_variants{
 
         String pipeline
         Array[String] filters
+        
 
         Boolean filter_ethnicity
         Boolean filter_rare
-    }
+        
+        String docker
+        Int memory
+        Int disk_space
+        Int ncpu
+        
+        File? liftover_bed
 
-    output{
+    }
+    
+	output{
         File pipeline_input = "pipeline_input.bed"
-        File vep_input = "vep_input.tsv"
-        File pipeline_maf = "pipeline_maf.tsv"
         File pipeline_input_genotypes = "pipeline_input_genotypes.tsv"
     }
 
@@ -25,55 +32,62 @@ task extract_rare_variants{
         disks: "local-disk ${disk_space} HDD"
         cpu: "${ncpu}"
     }
-
     command <<<
-        if [ "$pipeline" == "population" ]; then
+        if [ "~{pipeline}" == "population" ]; then
           if [ ! -f "pipeline_input.bed" ]; then
-            if [ "$filter_ethnicity" == "true" ]; then
-              if [ "$filter_rare" == "true" ]; then 
-                python3.10 scripts/executable_scripts/extract_rare_variants.py \
-                --vcf $input_vcf \
-                --lifted-coord $liftover_bed \
+            if [ "~{filter_ethnicity}" == "true" ]; then
+              if [ "~{filter_rare}" == "true" ]; then
+                extract_rare_variants \
+                --vcf "~{input_vcf}" \
+                ~{"--lifted-coord " + liftover_bed} \
                 --extract-genotype \
                 --infer-rareness \
+                --filter-rare \
                 --filter-ethnicity \
-                --metadata $metadata \
-                --genotype-filters '~{sep=" " filters}' \
+                --metadata "~{metadata}" \
+                --genotype-filters ~{sep=" " filters} \
                 --out-annotsv vep_input.tsv \
                 --out-generic pipeline_input.bed \
                 --out-maf pipeline_maf.tsv \
                 --out-genotype pipeline_input_genotypes.tsv
               else 
-                python3.10 scripts/executable_scripts/extract_rare_variants.py \
-                --vcf $input_vcf \
-                --lifted-coord $liftover_bed \
+                extract_rare_variants \
+                --vcf ~{input_vcf} \
+                ~{"--lifted-coord " + liftover_bed} \
+                --infer-rareness \
+                --no-filter-rare \
                 --extract-genotype \
                 --filter-ethnicity \
-                --metadata $metadata \
-                --genotype-filters '~{sep=" " filters}' \
+                --metadata ~{metadata} \
+                --genotype-filters ~{sep=" " filters} \
                 --out-annotsv vep_input.tsv \
                 --out-generic pipeline_input.bed \
                 --out-maf pipeline_maf.tsv \
                 --out-genotype pipeline_input_genotypes.tsv
               fi
             else
-              if [ "$filter_rare" == "true" ]; then 
-                python3.10 scripts/executable_scripts/extract_rare_variants.py \
-                --vcf $input_vcf \
-                --lifted-coord $liftover_bed \
+              if [ "~{filter_rare}" == "true" ]; then 
+                extract_rare_variants \
+                --vcf ~{input_vcf} \
+                ~{"--lifted-coord " + liftover_bed} \
                 --extract-genotype \
+                --no-filter-ethnicity \
                 --infer-rareness \
-                --genotype-filters '~{sep=" " filters}' \
+                --filter-rare \
+                --genotype-filters ~{sep=" " filters} \
                 --out-annotsv vep_input.tsv \
                 --out-generic pipeline_input.bed \
                 --out-maf pipeline_maf.tsv \
                 --out-genotype pipeline_input_genotypes.tsv
               else
-                python3.10 scripts/executable_scripts/extract_rare_variants.py \
-                --vcf $input_vcf \
-                --lifted-coord $liftover_bed \
+                extract_rare_variants \
+                --vcf ~{input_vcf} \
+                ~{"--lifted-coord " + liftover_bed} \
+                --no-filter-ethnicity \
+                --infer-rareness \
+                --no-filter-rare \
                 --extract-genotype \
-                --genotype-filters '~{sep=" " filters}' \
+                --genotype-filters ~{sep=" " filters} \
                 --out-annotsv vep_input.tsv \
                 --out-generic pipeline_input.bed \
                 --out-maf pipeline_maf.tsv \
@@ -81,12 +95,15 @@ task extract_rare_variants{
               fi
             fi
           fi
-        elif [ "$pipeline" == "smallset" ]; then
+        elif [ "~{pipeline}" == "smallset" ]; then
           if [ ! -f "pipeline_input.bed" ]; then
-          python3.10 scripts/executable_scripts/extract_rare_variants.py \
-          --vcf $input_vcf \
+          extract_rare_variants \
+          --vcf ~{input_vcf} \
           --extract-genotype \
-          --genotype-filters ${filters} \
+          --no-infer-rareness \
+          --no-filter-ethnicity \
+          --no-filter-rare \
+          --genotype-filters ~{sep=" " filters} \
           --out-annotsv vep_input.tsv \
           --out-generic pipeline_input.bed \
           --out-genotype pipeline_input_genotypes.tsv

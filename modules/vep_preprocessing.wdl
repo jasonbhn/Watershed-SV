@@ -1,28 +1,28 @@
+
 version 1.0
 
-task collect_files {
-    input {
-        Array[File] files
-        String out_tar_basename
+task vep_preprocessing {
+    input{
+        Int flank
+        File gene_sv_slop
+        
         String docker
         Int memory
         Int disk_space
         Int ncpu
     }
 
-    output {
-        File all_files = "${out_tar_basename}.tar.gz"
+    output{
+        File vep_input = "vep_input.~{flank}.bed"
     }
 
-    runtime {
+    runtime{
         docker: "${docker}"
         memory: "${memory}GB"
         disks: "local-disk ${disk_space} HDD"
         cpu: "${ncpu}"
     }
-
     command <<<
-    tar -czf ~{out_tar_basename}.tar.gz ~{sep=" " files}
-    ls
+        prep_vep_input "~{gene_sv_slop}" "vep_input.~{flank}.bed"
     >>>
 }
