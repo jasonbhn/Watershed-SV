@@ -1,12 +1,9 @@
 
 version 1.0
 
-task sv_to_gene_processing{
+task TAD_annotation_clean_up{
     input{
-        Int flank
-        
-        File pipeline_bed
-        File genes_bed
+        File TADs_tar
         
         String docker
         Int memory
@@ -15,7 +12,7 @@ task sv_to_gene_processing{
     }
 
     output{
-        File gene_sv_bed = "gene_sv.${flank}.bed"
+        Array[File] cleaned_TAD_beds = glob("*.bed")
     }
 
     runtime{
@@ -25,9 +22,9 @@ task sv_to_gene_processing{
         cpu: "${ncpu}"
     }
 
-
+    String curr_tad_dir = basename(TADs_tar,".tar.gz")
     command <<<
-        bedtools intersect -a ~{pipeline_bed} -b ~{genes_bed} -wb | \
-        awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > gene_sv.~{flank}.bed
+        tar -xzvf ~{TADs_tar}
+        clean_TADs_WDL ~{curr_tad_dir}
     >>>
 }
