@@ -1,28 +1,27 @@
+
 version 1.0
 
-task collect_files {
-    input {
-        Array[File] files
-        String out_tar_basename
+task vep_post_processing {
+    input{
+        Int flank
+        File vep_out
         String docker
         Int memory
         Int disk_space
         Int ncpu
     }
 
-    output {
-        File all_files = "${out_tar_basename}.tar.gz"
+    output{
+        File vep = "sv_to_gene_vep.~{flank}.tsv"
     }
 
-    runtime {
+    runtime{
         docker: "${docker}"
         memory: "${memory}GB"
         disks: "local-disk ${disk_space} HDD"
         cpu: "${ncpu}"
     }
-
     command <<<
-    tar -czf ~{out_tar_basename}.tar.gz ~{sep=" " files}
-    ls
+        extract_sv_vep_annotations "~{vep_out}" "sv_to_gene_vep.~{flank}.tsv"
     >>>
 }

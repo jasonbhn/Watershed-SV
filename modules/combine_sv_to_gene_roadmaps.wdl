@@ -5,6 +5,11 @@ task combine_sv_to_gene_roadmaps {
         Int flank
 
         String roadmap_dir
+        
+        String docker
+        Int memory
+        Int disk_space
+        Int ncpu
     }
 
     output {
@@ -19,8 +24,8 @@ task combine_sv_to_gene_roadmaps {
     }
 
     command <<<
-        python3.10 scripts/executable_scripts/combine_roadmaps.py \
-            --gene-sv-roadmap-dir ${roadmap_dir} \
-            --out-combined-roadmap combined_roadmaps.dist.${flank}.tsv
+        combine_roadmaps \
+            --gene-sv-roadmap-dir ~{roadmap_dir} \
+            --out-combined-roadmap combined_roadmaps.dist.~{flank}.tsv
     >>>
 }

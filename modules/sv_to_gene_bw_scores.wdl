@@ -8,9 +8,15 @@ task sv_to_gene_bw_scores {
         String name
         String stat_method
     
-        Int upper_limit
-        Int lower_limit
+        Float upper_limit
+        Float lower_limit
         Int flank
+        
+        String docker
+        Int memory
+        Int disk_space
+        Int ncpu
+        
     }
     
     output{
@@ -25,13 +31,13 @@ task sv_to_gene_bw_scores {
     }
     
     command <<<
-        python3.10 scripts/executable_scripts/sv_to_gene_bw_scores.py \
-        --gene-sv ${gene_sv_bed} \
-        --in-bigwig ${bw} \
-        --bigwig-name ${name} \
-        --stat-method ${stat_method} \
-        --score-upper-limit ${upper_limit} \
-        --score-lower-limit ${lower_limit} \
-        --out-gene-sv-score ${name}_by_genes_SV.{flank}.tsv
+        sv_to_gene_bw_scores \
+        --gene-sv ~{gene_sv_bed} \
+        --in-bigwig ~{bw} \
+        --bigwig-name ~{name} \
+        --stat-method ~{stat_method} \
+        --score-upper-limit ~{upper_limit} \
+        --score-lower-limit ~{lower_limit} \
+        --out-gene-sv-score ~{name}_by_genes_SV.~{flank}.tsv
         >>>
 }

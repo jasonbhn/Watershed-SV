@@ -1,3 +1,4 @@
+
 version 1.0
 
 task sv_to_gene_slop_processing{
@@ -7,6 +8,11 @@ task sv_to_gene_slop_processing{
         File genome_bound_file
         File genes_bed
         File pipeline_bed
+
+        String docker
+        Int memory
+        Int disk_space
+        Int ncpu
     }
 
     output{
@@ -21,9 +27,9 @@ task sv_to_gene_slop_processing{
     }
 
     command <<<
-        bedtools slop -g ${genome_bound_file} -i ${genes_bed} -b ${flank} | 
-        bedtools intersect -a ${pipeline_bed} -b stdin -wb | 
-        awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > gene_sv_slop.${flank}.bed
+        bedtools slop -g ~{genome_bound_file} -i ~{genes_bed} -b ~{flank} | \
+        bedtools intersect -a ~{pipeline_bed} -b stdin -wb | \
+        awk '{{OFS="\t";print $1,$2,$3,$4,$5,$9}}' > gene_sv_slop.~{flank}.bed
     >>>
 
 }
