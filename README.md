@@ -1,30 +1,41 @@
-# Watershed-SV [Construction in progress]
-Watershed-SV extends [Watershed](https://github.com/BennyStrobes/Watershed) to model the impact of rare SVs (DUP, DEL, DUP-CNV, DEL-CNV, INV, INS) on nearby gene expressions outlier. For running Watershed model, please refer to Watershed GitHub. This repository contains:
-1. the pipeline and associated scripts used for generating structural variations (rare and common) annotations with respect to nearby genes.
-2. the scripts for generating expression outliers. 
-3. the approach to merge annotations AND the expression outliers, and finally format data into desired format for [evaluate_watershed.R](https://github.com/BennyStrobes/Watershed/blob/master/evaluate_watershed.R) and [predict_watershed.R](https://github.com/BennyStrobes/Watershed/blob/master/predict_watershed.R).
+# WDL input description
 
-## Instructions for collecting annotations. 
-Watershed-SV pipeline currently uses bash script for simplicity. The key scripts are `scripts/executable_scripts/generate_annotations.sh` and `scripts/executable_scripts/generate_annotations_ABC.sh` depending on whether you want to run region-agnostic model (10kb model in the paper) or region-aware model (100kb model in the paper). 
-To replicate the environment for collecting annotations, see: `WatershedSV.yml`. 
-### Parameter breakdown: 
-1. `-p | --pipeline`: which pipeline to use, select from `population`, `smallset`.
-If data is of sufficient size, ie > 100, select population, allowing for option --filter-ethnicity, --filter rare. 
-Otherwise, select smallset. 
-2. `-v | --input-vcf`: input vcf file, it has to have at least 1 sample column. We only consider SVTYPEs: DUP, DEL, DUP_CNV, DEL_CNV, CNV, INS, INV. 
-3. `-f | --filters`: if variant record in vcf have these filters, keep for further analysis. 
-4. `-k | --flank`: how much flanking up and downstream of genes to consider. usually use 100000, 10000.  
-5. `-r | --rareness`: rareness, if --filter-rare == True, then this is the MAF threshold to set to filter for rare variants, 0.01 recommended or lower.  
-6. `-l | --liftover-bed`: if you have a crossmap/liftover SV coordinate you want to use, ie, if VCF is in older build, you lifted over coordinates to HG38, then provide the bed file in addition to original VCF to convert coordinates. 
-7. `-o | --outdir`: output directory name for annotations
-8. `-b | --genome-bound-file`: a file depicting the chromosome/contig name, start and end coordinates.
-9. `-g | --gencode-genes`: gencode transcript model file.
-10. `-c | --vep-cache-dir`: vep_cache_dir for running vep annotations. we recommend setting up vep offline to run our pipeline smoothly.
-11. `-a | --metadata`: metadata file for filtering ethnicity. In our case, training data is GTEx, we used GTEx metadata file from dbGaP.
-12. `-e | --filter-ethnicity`: filter by ethnicity? GTEx relic, True to only train on EUR individuals.
-13. `-i | --filter-rare`: filter rare variants if using `population` model 
-
-## Evaluating Watershed-SV model against WGS-only model
-
-## Using Watershed-SV model learned on a reference dataset to prioritize gene-SV pairs in an independent test dataset. 
-
+* `File input_vcf`
+  * SV VCF file. Must contain INFO/MODECN and FORMAT/CN fields for CNVs, and a INFO/SVLEN field
+* `File metadata`: Tab-delimited file containing SubjectID (must match some of the IDs of `input_vcf`), and a `RACE` column used if subsetting by population group.
+  * Only used if you set `filter_ethnicity`=True, but you are still required to provide a file.
+* `String pipeline`: "population" or "smallset". “If data is of sufficient size, ie > 100, select population.” "smallset" disables `filter_ethnicity` and `filter_rare` options.
+* `Array[String] filters`: Keeps only the variants which has one of these strings in the input_vcf's FILTER column. By default, ["PASS", “.”, “MATCH_1KG”].
+* `Boolean filter_ethnicity`: if True, filter for EUR ancestry.
+* `Boolean filter_rare`: if True, filter for variants w/ MAF < 0.01.
+* `File gencode_genes`: GENCODE gtf file
+* `File genome_bound_file`: Tab-delimited file with 1st col chr/contig name and 2nd col the length in basepairs. Analysis will be restricted to the chrs/contigs listed.
+* `Int flank`: “how much flanking up and downstream of genes to consider. Usually use 100000 or 10000.”
+* `File crm_remap`: REMAP CRM annotation file
+* `File ABC_enhancers`: Activity-By-Contact annotation file
+* `File bw_GC`: GC content annotation file
+* `File bw_linsight`: LINSIGHT scores annotation file
+* `File bw_CADD`: CADD scores annotation file
+* `File bw_phastcon`: PhastCons20way scores annotation file
+* `File cpg_file`: CpG islands annotation file
+* `File TADs_tar`: Archive of TAD annotations
+* `File enhancers`: Enhancers annotation file
+* `File primary_cells`: File listing of primary cell types
+* `File roadmap_tar`: Archive of ROADMAP annotations
+* `File vep_cache_tar`: VEP cache archive (homo_sapiens_merged_vep_112_GRCh38.tar.gz)
+* `File gene_list`: Tab-delimited file with chrom, start, end, gene, gene_type, and Strand columns.
+* `File expression_file`: Tab-delimited file of expression z-scores for each gene (3 columns: gene, Individual, and z-score)
+* `String maf_mode`: "upload" a custom SV→MAF tsv, or “extract” from the input_vcf file.
+* `File? maf_file`: If you set maf_mode == "upload", provide here the file name of a tab-delimited file w/ 2 columns: SV id and AF.
+* `String maf_field`: If you set maf_mode == "extract", provide the field name of allele frequency from the input_vcf's INFO column (usually "AF").
+* `Int min_support_tissue`: Minimum number of samples with non-NaN measurements for a tissue. If a tissue type has fewer samples than this, it will be dropped.
+* `Float zscore_threshold`: Z-score threshold for outlier calling. Usually 3.
+* `String expression_field`: Prefix that all the expression data colnames of the expression_file input have, like “ENSG”.
+* `String expression_id_field`: Name of the subject ID column of `expression_file`.
+* `String length_mode`: “upload-SV” or "upload-VNTR" to get length info from length_file input, or "extract" length info from input_vcf.
+* `File? length_file`: If you set length_mode == "upload-SV", file name of tab-delimited file w/ 2 columns: SV id and SV length.
+* `String length_field`: If you set length_mode == "extract", field name of AF in the input_vcf's INFO column.
+* `String CN_mode`: "upload" to get copy number from CN_file, or "extract" from other information (it will be calculated based on the SVTYPE of each SV)
+* `File? CN_file`: If you set CN_mode == “upload”, a Tab-delimited file with SubjectID, SV, and CN columns.
+* `String collapse_mode`: "gene" to collapse all rare SVs to their respective nearby gene, or "gene-sv" to evaluate per-gene per-SV.
+* `Boolean remove_control_genes`: Whether to remove genes with no outliers or not.
