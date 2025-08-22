@@ -108,7 +108,7 @@ workflow Watershed_SV {
             filter_ethnicity=filter_ethnicity,
             filter_rare=filter_rare,
             docker=docker,
-            memory=32,
+            memory=200,
             disk_space=40,
             ncpu=4
     }
