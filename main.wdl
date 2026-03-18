@@ -25,6 +25,11 @@ import "https://raw.githubusercontent.com/jasonbhn/Watershed-SV/refs/heads/WDL/m
 import "https://raw.githubusercontent.com/jasonbhn/Watershed-SV/refs/heads/WDL/modules/collect_files.wdl"
 
 workflow Watershed_SV {
+    meta {
+      author: "Bohan Ni"
+      email: "bni1@jh.edu"
+    }
+
     input {
         # extract_rare_variants
         File input_vcf
